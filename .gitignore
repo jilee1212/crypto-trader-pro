@@ -1,12 +1,65 @@
-# Byte-compiled / optimized / DLL files
+# Crypto Trader Pro - .gitignore
+# Security and Privacy Protection for Cryptocurrency Trading Bot
+
+# ================================
+# SECURITY - NEVER COMMIT THESE!
+# ================================
+
+# API Keys and Secrets
+.env
+.env.*
+!.env.template
+config/api_keys.json
+config/secrets.json
+*.key
+*.secret
+
+# Personal Configuration Files
+config/config.json
+config/personal_config.json
+config/live_config.json
+!config/config.json.example
+
+# Trading Data and Databases
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite
+data/crypto_data.db
+data/backups/
+data/exports/
+
+# Log Files
+logs/
+*.log
+*.log.*
+crypto_trader.log
+trading.log
+errors.log
+backtesting.log
+
+# ================================
+# DEVELOPMENT FILES
+# ================================
+
+# Python Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
 
-# C extensions
-*.so
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Distribution / packaging
+# Distribution / Packaging
 .Python
 build/
 develop-eggs/
@@ -20,84 +73,81 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
+# Unit Test / Coverage Reports
 htmlcov/
 .tox/
-.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 .pytest_cache/
 
-# Virtual environments
-venv/
-env/
-ENV/
-.venv/
-.env
+# ================================
+# TRADING SPECIFIC
+# ================================
 
-# Environment variables (보안상 중요!)
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*
+# Trading Results and Backtest Data
+results/
+backtests/
+trades/
+portfolio/
+*.csv
+*.xlsx
+*_results.json
+*_backtest.json
 
-# API 키 및 민감한 설정 파일
-/config/secrets.json
-/config/api_keys.json
-/config/.env
-**/api_keys.*
-**/secrets.*
+# Personal Data Files
+data/*.csv
+data/*.json
+!data/sample_data.json
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Temporary and Cache Files
+*.tmp
+*.temp
+cache/
+temp/
 
-# OS
+# ================================
+# SYSTEM FILES
+# ================================
+
+# Windows
+desktop.ini
+*.lnk
+
+# macOS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+.AppleDouble
+.LSOverride
 
-# Project specific
-/logs/*.log
-/data/*.csv
-/data/*.json
-/data/*.db
-/config/secrets.json
-/config/api_keys.json
+# Linux
+.directory
 
-# Trading specific
-*.pkl
-*.pickle
-/backtesting/results/
-/live_trading/positions/
-/live_trading/orders/
+# ================================
+# BACKUP AND ARCHIVE FILES
+# ================================
+
+*.bak
+*.backup
+*_backup.*
+*_old.*
+*.zip
+*.tar.gz
+*.rar

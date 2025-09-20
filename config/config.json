@@ -1,41 +1,140 @@
 {
+  "_comment": "Crypto Trader Pro - Complete Configuration File",
+  "_description": "Professional cryptocurrency trading bot configuration with data collection, arbitrage detection, and risk management",
+  "_version": "1.0.0",
+  "_last_updated": "2025-01-20",
+
   "exchange": {
+    "_comment": "Primary exchange configuration for trading and data collection",
     "name": "binance",
     "testnet": true,
     "api_key": "",
-    "api_secret": ""
+    "api_secret": "",
+    "rate_limit_per_second": 10,
+    "timeout_seconds": 30
   },
+
+  "data_collection": {
+    "_comment": "Real-time data collection system configuration",
+    "target_symbols": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "BNB/USDT",
+      "ADA/USDT",
+      "DOT/USDT"
+    ],
+    "timeframes": ["1m", "5m", "15m"],
+    "collection_interval_seconds": 60,
+    "max_data_age_hours": 24,
+    "parallel_workers": 5,
+    "retry_attempts": 3,
+    "cache_ttl_seconds": 5
+  },
+
+  "arbitrage": {
+    "_comment": "Multi-exchange arbitrage detection settings",
+    "exchanges": ["binance", "coinbase", "kraken"],
+    "min_profit_percentage": 0.5,
+    "scan_interval_seconds": 30,
+    "include_fees": true,
+    "min_volume_usd": 10000,
+    "max_spread_age_seconds": 10,
+    "notification_threshold": 1.0
+  },
+
+  "database": {
+    "_comment": "SQLite database management and optimization",
+    "path": "data/crypto_data.db",
+    "backup_interval_hours": 6,
+    "max_db_size_mb": 500,
+    "connection_pool_size": 5,
+    "vacuum_interval_days": 7,
+    "optimize_on_startup": true
+  },
+
   "trading": {
+    "_comment": "Core trading parameters and position management",
     "max_risk_per_trade": 0.02,
     "daily_loss_limit": 0.03,
-    "currencies": ["BTC/USDT", "ETH/USDT", "BNB/USDT"]
+    "currencies": ["BTC/USDT", "ETH/USDT", "BNB/USDT"],
+    "min_trade_amount_usd": 10,
+    "max_slippage_percentage": 0.1
   },
+
   "strategy": {
+    "_comment": "RSI-based day trading strategy configuration",
     "rsi_period": 14,
     "rsi_buy_threshold": 30,
     "rsi_sell_threshold": 70,
-    "volume_increase_threshold": 0.2
+    "volume_increase_threshold": 0.2,
+    "confirmation_candles": 2,
+    "cooldown_minutes": 15
   },
+
   "risk_management": {
-    "stop_loss_percent": 0.01,
+    "_comment": "Advanced risk management and position sizing",
+    "max_position_size_percentage": 2,
+    "stop_loss_percentage": 1,
+    "daily_loss_limit_percentage": 5,
     "take_profit_ratio": 2.0,
     "max_open_positions": 3,
-    "position_sizing_method": "kelly"
+    "position_sizing_method": "kelly",
+    "drawdown_limit_percentage": 10
   },
-  "arbitrage": {
-    "exchanges": ["binance", "coinbase", "kraken"],
-    "min_profit_threshold": 0.005,
-    "include_fees": true
+
+  "alerts": {
+    "_comment": "Alert and notification system configuration",
+    "console_output": true,
+    "log_file_enabled": true,
+    "alert_cooldown_minutes": 5,
+    "price_change_alert_percentage": 5.0,
+    "volume_spike_alert_multiplier": 3.0
   },
+
   "notifications": {
+    "_comment": "External notification services (Telegram, Email)",
     "telegram_enabled": false,
     "telegram_bot_token": "",
     "telegram_chat_id": "",
-    "email_enabled": false
+    "email_enabled": false,
+    "email_smtp_server": "",
+    "email_port": 587,
+    "email_username": "",
+    "email_password": ""
   },
+
+  "logging": {
+    "_comment": "Comprehensive logging system configuration",
+    "level": "INFO",
+    "file_path": "logs/trading_bot.log",
+    "max_file_size_mb": 50,
+    "backup_count": 5,
+    "console_logging": true,
+    "detailed_api_logging": false,
+    "performance_logging": true
+  },
+
   "timeframes": {
+    "_comment": "Analysis and monitoring timeframe settings",
     "data_collection": "5m",
     "analysis": "1h",
-    "monitoring": "1m"
+    "monitoring": "1m",
+    "backtesting": "1d"
+  },
+
+  "performance": {
+    "_comment": "System performance and resource management",
+    "max_memory_usage_mb": 512,
+    "cpu_usage_threshold": 80,
+    "disk_space_threshold_mb": 1000,
+    "monitoring_interval_seconds": 300
+  },
+
+  "security": {
+    "_comment": "Security and validation settings",
+    "validate_ssl_certificates": true,
+    "api_request_timeout": 30,
+    "max_retry_attempts": 3,
+    "rate_limit_buffer": 0.8
   }
 }

@@ -1,0 +1,118 @@
+{
+  "exchange": {
+    "name": "binance",
+    "testnet": true,
+    "api_key": "",
+    "api_secret": "",
+    "enable_rate_limiting": true,
+    "rate_limit_calls_per_second": 10,
+    "rate_limit_calls_per_minute": 600
+  },
+  "trading": {
+    "max_risk_per_trade": 0.02,
+    "daily_loss_limit": 0.03,
+    "currencies": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "BNB/USDT",
+      "ADA/USDT",
+      "DOT/USDT"
+    ],
+    "position_sizing_method": "kelly",
+    "max_open_positions": 3
+  },
+  "strategy": {
+    "rsi_period": 14,
+    "rsi_buy_threshold": 30,
+    "rsi_sell_threshold": 70,
+    "volume_increase_threshold": 0.2,
+    "enable_arbitrage": true,
+    "min_arbitrage_profit": 0.5
+  },
+  "risk_management": {
+    "stop_loss_percent": 0.01,
+    "take_profit_ratio": 2.0,
+    "max_open_positions": 3,
+    "position_sizing_method": "kelly",
+    "enable_trailing_stop": false,
+    "trailing_stop_percent": 0.005
+  },
+  "arbitrage": {
+    "exchanges": [
+      "binance",
+      "coinbase",
+      "kraken"
+    ],
+    "min_profit_threshold": 0.005,
+    "include_fees": true,
+    "max_execution_time_seconds": 300,
+    "enable_auto_execution": false
+  },
+  "data_collection": {
+    "timeframes": [
+      "1m",
+      "5m",
+      "15m",
+      "1h"
+    ],
+    "collection_intervals": {
+      "realtime_prices": 30,
+      "ohlcv_1m": 60,
+      "ohlcv_5m": 300,
+      "market_summary": 300
+    },
+    "enable_gap_filling": true,
+    "max_gap_hours": 24
+  },
+  "database": {
+    "path": "data/crypto_data.db",
+    "max_connections": 5,
+    "enable_wal_mode": true,
+    "auto_vacuum": true,
+    "backup_interval_hours": 24,
+    "max_data_age_days": 365
+  },
+  "logging": {
+    "level": "INFO",
+    "file_path": "logs/crypto_trader.log",
+    "max_file_size_mb": 50,
+    "backup_count": 5,
+    "console_logging": true,
+    "enable_trading_log": true,
+    "enable_error_log": true
+  },
+  "notifications": {
+    "telegram_enabled": false,
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "email_enabled": false,
+    "email_smtp_server": "",
+    "email_username": "",
+    "email_password": "",
+    "notify_on_trades": true,
+    "notify_on_errors": true,
+    "notify_on_arbitrage": true
+  },
+  "system": {
+    "max_cpu_percent": 80,
+    "max_memory_percent": 85,
+    "min_disk_space_gb": 1,
+    "enable_resource_monitoring": true,
+    "scheduler_respect_market_hours": false,
+    "emergency_stop_on_high_loss": true,
+    "max_daily_loss_percent": 5.0
+  },
+  "security": {
+    "enable_ip_whitelist": false,
+    "allowed_ips": [],
+    "enable_2fa": false,
+    "session_timeout_minutes": 60,
+    "max_login_attempts": 3
+  },
+  "timeframes": {
+    "data_collection": "5m",
+    "analysis": "1h",
+    "monitoring": "1m",
+    "backup": "1d"
+  }
+}
