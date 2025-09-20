@@ -1,0 +1,41 @@
+{
+  "exchange": {
+    "name": "binance",
+    "testnet": true,
+    "api_key": "",
+    "api_secret": ""
+  },
+  "trading": {
+    "max_risk_per_trade": 0.02,
+    "daily_loss_limit": 0.03,
+    "currencies": ["BTC/USDT", "ETH/USDT", "BNB/USDT"]
+  },
+  "strategy": {
+    "rsi_period": 14,
+    "rsi_buy_threshold": 30,
+    "rsi_sell_threshold": 70,
+    "volume_increase_threshold": 0.2
+  },
+  "risk_management": {
+    "stop_loss_percent": 0.01,
+    "take_profit_ratio": 2.0,
+    "max_open_positions": 3,
+    "position_sizing_method": "kelly"
+  },
+  "arbitrage": {
+    "exchanges": ["binance", "coinbase", "kraken"],
+    "min_profit_threshold": 0.005,
+    "include_fees": true
+  },
+  "notifications": {
+    "telegram_enabled": false,
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "email_enabled": false
+  },
+  "timeframes": {
+    "data_collection": "5m",
+    "analysis": "1h",
+    "monitoring": "1m"
+  }
+}
