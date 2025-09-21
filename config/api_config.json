@@ -1,0 +1,16 @@
+{
+    "exchanges": {
+        "binance": {
+            "testnet": true,
+            "rate_limit": 1200
+        },
+        "coinbase": {
+            "testnet": true,
+            "rate_limit": 10
+        }
+    },
+    "rate_limits": {
+        "requests_per_minute": 60,
+        "burst_limit": 10
+    }
+}

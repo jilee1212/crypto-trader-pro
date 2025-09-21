@@ -1,0 +1,23 @@
+{
+    "risk_management": {
+        "max_daily_loss_percent": 3.0,
+        "max_position_size_percent": 1.0,
+        "stop_loss_percent": 1.0,
+        "take_profit_percent": 2.0
+    },
+    "trading_pairs": [
+        "BTC/USDT",
+        "ETH/USDT",
+        "BNB/USDT"
+    ],
+    "timeframes": [
+        "5m",
+        "15m",
+        "1h"
+    ],
+    "indicators": {
+        "rsi_period": 14,
+        "rsi_oversold": 30,
+        "rsi_overbought": 70
+    }
+}

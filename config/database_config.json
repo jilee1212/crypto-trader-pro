@@ -1,0 +1,6 @@
+{
+    "database_path": "data/crypto_trader.db",
+    "backup_enabled": true,
+    "backup_interval_hours": 24,
+    "max_backup_files": 7
+}

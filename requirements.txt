@@ -10,6 +10,7 @@
 ccxt>=4.2.0,<5.0.0
 
 # Data manipulation and scheduling
+pandas>=2.1.0,<3.0.0
 schedule>=1.2.0,<2.0.0
 python-dotenv>=1.0.0,<2.0.0
 
@@ -21,6 +22,25 @@ colorama>=0.4.6,<1.0.0
 
 # Testing framework
 pytest>=7.4.0,<8.0.0
+
+# ================================================================
+# WEB DASHBOARD DEPENDENCIES
+# ================================================================
+
+# Web dashboard framework
+streamlit>=1.28.0,<2.0.0
+
+# Interactive data visualization
+plotly>=5.17.0,<6.0.0
+
+# Streamlit-optimized statistical visualization
+altair>=5.1.0,<6.0.0
+
+# Auto-refresh functionality for real-time dashboards
+streamlit-autorefresh>=1.0.1,<2.0.0
+
+# Advanced chart components for Streamlit
+streamlit-echarts>=0.4.0,<1.0.0
 
 # ================================================================
 # OPTIONAL DEPENDENCIES

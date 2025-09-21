@@ -13,6 +13,10 @@ from datetime import datetime, timedelta
 from contextlib import contextmanager
 from pathlib import Path
 import logging
+import sys
+
+# Add project root to Python path
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from utils.exceptions import (
     DataValidationError,

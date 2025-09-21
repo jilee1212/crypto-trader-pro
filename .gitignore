@@ -151,3 +151,4 @@ desktop.ini
 *.zip
 *.tar.gz
 *.rar
+config/binance_testnet.json
