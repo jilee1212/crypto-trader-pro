@@ -140,6 +140,7 @@ desktop.ini
 # Linux
 .directory
 
+
 # ================================
 # BACKUP AND ARCHIVE FILES
 # ================================
@@ -152,3 +153,27 @@ desktop.ini
 *.tar.gz
 *.rar
 config/binance_testnet.json
+
+# ================================
+# ADDITIONAL SECURITY
+# ================================
+
+# Cryptocurrency specific
+*wallet*
+*private*
+*mnemonic*
+seed_phrase*
+crypto_keys*
+
+# API and Authentication
+auth_token*
+session_token*
+jwt_token*
+oauth_token*
+*api_key*
+*secret_key*
+
+# Production configurations
+production_config*
+prod_config*
+live_trading_config*
