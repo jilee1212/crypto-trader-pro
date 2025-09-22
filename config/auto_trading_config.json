@@ -1,0 +1,67 @@
+{
+  "engine": {
+    "trading_interval": 300,
+    "max_concurrent_positions": 5,
+    "enable_paper_trading": true,
+    "auto_restart": true,
+    "restart_delay": 60
+  },
+  "risk_management": {
+    "daily_loss_limit_pct": 3.0,
+    "position_size_pct": 2.0,
+    "stop_loss_pct": 1.5,
+    "take_profit_pct": 3.0,
+    "max_drawdown_pct": 5.0,
+    "max_consecutive_losses": 5,
+    "cooling_period_minutes": 30
+  },
+  "symbols": [
+    "BTC/USDT",
+    "ETH/USDT",
+    "BNB/USDT",
+    "ADA/USDT",
+    "SOL/USDT"
+  ],
+  "trading_mode": "CONSERVATIVE",
+  "ai_settings": {
+    "confidence_threshold": 70,
+    "use_multiple_timeframes": true,
+    "risk_adjusted_signals": true,
+    "market_condition_filter": true
+  },
+  "notifications": {
+    "enabled": true,
+    "channels": ["dashboard", "email"],
+    "trade_notifications": true,
+    "error_notifications": true,
+    "daily_summary": true,
+    "profit_target_alerts": true,
+    "loss_limit_alerts": true
+  },
+  "exchange": {
+    "name": "binance",
+    "testnet": true,
+    "rate_limit": 1200,
+    "timeout": 30000
+  },
+  "logging": {
+    "level": "INFO",
+    "max_file_size_mb": 100,
+    "backup_count": 5,
+    "log_to_file": true,
+    "log_to_console": true
+  },
+  "custom_settings": {
+    "emergency_shutdown_conditions": [
+      "api_connection_lost",
+      "daily_loss_exceeded",
+      "system_overload"
+    ],
+    "performance_tracking": {
+      "benchmark_symbol": "BTC/USDT",
+      "performance_calculation_period": 30
+    }
+  },
+  "version": "1.0.0",
+  "last_updated": "2024-01-01T00:00:00"
+}

@@ -8776,6 +8776,40 @@ class DynamicRiskManager:
             }
         }
 
+    def calculate_position_size(self, entry_price: float, stop_loss_price: float,
+                              account_balance: float, ai_confidence: float = 0.7,
+                              risk_percent: float = 0.02) -> Dict[str, Any]:
+        """
+        Compatibility wrapper for calculate_enhanced_position_size method
+        This method provides the same interface as the standard RiskManager
+
+        Args:
+            entry_price: Entry price for the position
+            stop_loss_price: Stop loss price
+            account_balance: Current account balance
+            ai_confidence: AI confidence level (0.0-1.0)
+            risk_percent: Risk percentage (default 2%)
+
+        Returns:
+            Dict containing position sizing information
+        """
+        # Calculate take profit based on 2:1 risk-reward ratio
+        price_diff = abs(entry_price - stop_loss_price)
+        if entry_price > stop_loss_price:  # Long position
+            take_profit_price = entry_price + (price_diff * 2)
+        else:  # Short position
+            take_profit_price = entry_price - (price_diff * 2)
+
+        # Use the enhanced position sizing method
+        return self.calculate_enhanced_position_size(
+            entry_price=entry_price,
+            stop_loss_price=stop_loss_price,
+            take_profit_price=take_profit_price,
+            account_balance=account_balance,
+            ai_confidence=ai_confidence,
+            risk_percent=risk_percent
+        )
+
 # ==========================================
 # ENHANCED AI TRADING SYSTEM WITH RISK INTEGRATION
 # ==========================================
@@ -8991,11 +9025,11 @@ class EnhancedAITradingSystem:
             return {
                 'success': True,
                 'position_size': position_result['position_size'],
-                'leverage': position_result['optimal_leverage'],
-                'margin_required': position_result['required_margin'],
+                'leverage': position_result['leverage'],
+                'margin_required': position_result['margin_required'],
                 'position_value': position_result['position_value'],
                 'margin_usage_percent': position_result['margin_usage_percent'],
-                'max_loss_amount': position_result['account_risk_amount'],
+                'max_loss_amount': position_result['max_loss_amount'],
                 'risk_reward_ratio': position_result['risk_reward_ratio']
             }
         else:

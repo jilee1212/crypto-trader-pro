@@ -1,0 +1,98 @@
+{
+  "risk_limits": {
+    "daily_loss_limit": {
+      "percentage": 3.0,
+      "absolute_amount": 1000.0,
+      "currency": "USDT"
+    },
+    "weekly_loss_limit": {
+      "percentage": 10.0,
+      "absolute_amount": 3000.0
+    },
+    "monthly_loss_limit": {
+      "percentage": 25.0,
+      "absolute_amount": 7500.0
+    }
+  },
+  "position_sizing": {
+    "default_position_size_pct": 2.0,
+    "max_position_size_pct": 5.0,
+    "min_position_size_usdt": 10.0,
+    "sizing_method": "kelly_criterion",
+    "conservative_multiplier": 0.5
+  },
+  "stop_loss_rules": {
+    "default_stop_loss_pct": 1.5,
+    "trailing_stop": {
+      "enabled": true,
+      "distance_pct": 1.0,
+      "min_profit_to_activate": 2.0
+    },
+    "time_based_stop": {
+      "enabled": true,
+      "max_holding_hours": 24
+    }
+  },
+  "take_profit_rules": {
+    "default_take_profit_pct": 3.0,
+    "partial_profit_taking": {
+      "enabled": true,
+      "levels": [
+        {"profit_pct": 2.0, "close_pct": 25},
+        {"profit_pct": 4.0, "close_pct": 50},
+        {"profit_pct": 6.0, "close_pct": 75}
+      ]
+    }
+  },
+  "correlation_limits": {
+    "max_correlated_positions": 3,
+    "correlation_threshold": 0.7,
+    "correlation_lookback_days": 30
+  },
+  "volatility_controls": {
+    "max_portfolio_volatility": 0.15,
+    "volatility_scaling": true,
+    "high_volatility_threshold": 0.05,
+    "low_volatility_threshold": 0.01
+  },
+  "drawdown_controls": {
+    "max_drawdown_pct": 5.0,
+    "drawdown_recovery_mode": true,
+    "position_size_reduction_pct": 50,
+    "trading_halt_threshold": 7.5
+  },
+  "market_condition_filters": {
+    "bear_market_adjustments": {
+      "reduce_position_size": true,
+      "increase_stop_loss": true,
+      "disable_long_only": false
+    },
+    "high_volatility_adjustments": {
+      "reduce_position_size": true,
+      "tighter_stops": true,
+      "extended_analysis": true
+    }
+  },
+  "emergency_protocols": {
+    "auto_liquidation_triggers": [
+      "daily_loss_exceeded",
+      "max_drawdown_reached",
+      "api_connection_lost_minutes"
+    ],
+    "circuit_breakers": {
+      "portfolio_loss_5min": 2.0,
+      "portfolio_loss_1hour": 5.0,
+      "consecutive_losses": 8
+    }
+  },
+  "risk_monitoring": {
+    "update_interval_seconds": 30,
+    "alert_thresholds": {
+      "approaching_daily_limit": 80,
+      "high_correlation_warning": 0.6,
+      "volatility_spike": 2.0
+    }
+  },
+  "version": "1.0.0",
+  "last_updated": "2024-01-01T00:00:00"
+}

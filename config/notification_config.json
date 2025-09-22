@@ -1,0 +1,159 @@
+{
+  "global_settings": {
+    "enabled": true,
+    "timezone": "UTC",
+    "rate_limiting": {
+      "max_notifications_per_hour": 50,
+      "burst_protection": true
+    }
+  },
+  "channels": {
+    "dashboard": {
+      "enabled": true,
+      "priority": "high",
+      "real_time": true
+    },
+    "email": {
+      "enabled": false,
+      "smtp_server": "",
+      "smtp_port": 587,
+      "username": "",
+      "password": "",
+      "from_address": "",
+      "to_addresses": [],
+      "priority": "medium"
+    },
+    "discord": {
+      "enabled": false,
+      "webhook_url": "",
+      "channel_id": "",
+      "bot_token": "",
+      "priority": "high"
+    },
+    "telegram": {
+      "enabled": false,
+      "bot_token": "",
+      "chat_ids": [],
+      "priority": "high"
+    },
+    "slack": {
+      "enabled": false,
+      "webhook_url": "",
+      "channel": "#trading-alerts",
+      "priority": "medium"
+    }
+  },
+  "notification_types": {
+    "trade_executed": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram"],
+      "template": "🔄 거래 실행: {symbol} {side} {quantity} @ {price}",
+      "include_details": true
+    },
+    "profit_target_hit": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram", "email"],
+      "template": "🎯 수익 목표 달성: {symbol} +{profit_pct}% (+${profit_amount})",
+      "include_chart": true
+    },
+    "stop_loss_hit": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram", "email"],
+      "template": "🛑 손절 실행: {symbol} -{loss_pct}% (-${loss_amount})",
+      "include_analysis": true
+    },
+    "daily_loss_warning": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram", "email"],
+      "template": "⚠️ 일일 손실 경고: {current_loss_pct}% (한도: {limit_pct}%)",
+      "urgency": "high"
+    },
+    "emergency_stop": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram", "email", "discord"],
+      "template": "🚨 긴급 중단: {reason}",
+      "urgency": "critical",
+      "retry_attempts": 3
+    },
+    "system_error": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram"],
+      "template": "❌ 시스템 오류: {error_message}",
+      "include_stacktrace": false
+    },
+    "api_connection_lost": {
+      "enabled": true,
+      "channels": ["dashboard", "telegram", "email"],
+      "template": "🔌 API 연결 끊김: {exchange} - {duration}분 경과",
+      "urgency": "high"
+    },
+    "position_opened": {
+      "enabled": true,
+      "channels": ["dashboard"],
+      "template": "📈 포지션 진입: {symbol} {side} {confidence}% 신뢰도",
+      "include_analysis": true
+    },
+    "position_closed": {
+      "enabled": true,
+      "channels": ["dashboard"],
+      "template": "📉 포지션 청산: {symbol} {pnl_pct}% ({duration})",
+      "include_summary": true
+    },
+    "high_volatility_alert": {
+      "enabled": true,
+      "channels": ["dashboard"],
+      "template": "📊 높은 변동성 감지: {symbol} {volatility}%",
+      "frequency_limit": "once_per_hour"
+    },
+    "daily_summary": {
+      "enabled": true,
+      "channels": ["email", "telegram"],
+      "schedule": "20:00",
+      "template": "📊 일일 요약: {trades_count}건 거래, {pnl}% 수익률",
+      "include_performance_chart": true
+    },
+    "weekly_report": {
+      "enabled": true,
+      "channels": ["email"],
+      "schedule": "sunday_20:00",
+      "template": "📈 주간 보고서",
+      "include_detailed_analysis": true
+    }
+  },
+  "formatting": {
+    "currency_symbol": "$",
+    "decimal_places": 2,
+    "percentage_format": "0.00%",
+    "timestamp_format": "%Y-%m-%d %H:%M:%S",
+    "number_separators": true
+  },
+  "filters": {
+    "minimum_trade_amount": 10.0,
+    "minimum_profit_notification": 0.5,
+    "minimum_loss_notification": 0.5,
+    "quiet_hours": {
+      "enabled": false,
+      "start": "22:00",
+      "end": "06:00",
+      "timezone": "UTC",
+      "emergency_override": true
+    }
+  },
+  "retry_policy": {
+    "max_retries": 3,
+    "retry_delay_seconds": 5,
+    "exponential_backoff": true,
+    "failed_notification_alert": true
+  },
+  "message_templates": {
+    "success_emoji": "✅",
+    "warning_emoji": "⚠️",
+    "error_emoji": "❌",
+    "info_emoji": "ℹ️",
+    "money_emoji": "💰",
+    "chart_emoji": "📊",
+    "robot_emoji": "🤖"
+  },
+  "version": "1.0.0",
+  "last_updated": "2024-01-01T00:00:00"
+}
