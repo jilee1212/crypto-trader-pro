@@ -17,7 +17,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 from database import get_db_manager, User, TradingSettings
-from security import get_api_key_manager
+from database.api_manager import get_api_manager as get_api_key_manager
 from .market_monitor import MarketDataMonitor
 from .user_trading_context import UserTradingContext
 from .trading_scheduler import TradingScheduler

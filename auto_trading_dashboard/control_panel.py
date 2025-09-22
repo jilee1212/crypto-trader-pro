@@ -849,7 +849,7 @@ class AdvancedControlPanel:
             # API 키 확인 및 실제 데이터 조회
             if hasattr(st.session_state, 'user') and st.session_state.user:
                 from database import get_db_manager
-                from security import get_api_key_manager
+                from database.api_manager import get_api_manager as get_api_key_manager
 
                 db_manager = get_db_manager()
                 api_manager = get_api_key_manager()

@@ -11,6 +11,14 @@
 - **실행 환경**: Python 3.12, PM2 백그라운드 운영
 - **GitHub**: https://github.com/jilee1212/crypto-trader-pro.git
 
+## 🔧 최신 기술 스택 (2025년 1월 업데이트)
+- **백엔드**: Python 3.12, Streamlit 1.40.0
+- **API 연동**: python-binance 라이브러리 (공식 패턴)
+- **데이터베이스**: SQLAlchemy ORM + SQLite, 암호화된 API 키 저장
+- **보안**: Fernet 암호화, bcrypt 패스워드 해싱, JWT 토큰
+- **배포**: PM2 프로세스 관리, Nginx 리버스 프록시
+- **모니터링**: 실시간 거래 로그, 시스템 상태 대시보드
+
 ## 🎯 메인 플랫폼 - main_platform.py
 
 **포트 8501**: http://localhost:8501
@@ -146,8 +154,9 @@ python trading_engine/background_trader.py
 ### 3. API 키 설정 (필수)
 ```
 Binance Testnet:
-- API Key: j4LXKHClbly0HMjEcu7EZzmjZAg0KJEfAIVx6g8PeyDUnJ22txOUCGBGQDZVEUeN
-- Secret: k707qfHVdY8Erv1xggbmL8LT0heSX4987I7aZLXv9H0orzIolFDj5KFisHzytAMD
+- 웹 인터페이스에서 직접 설정
+- 설정 > API 설정 탭에서 테스트넷 키 입력
+- 암호화된 안전한 저장소에 보관
 - 모드: 테스트넷 (처음 사용 시 필수)
 ```
 
@@ -200,12 +209,37 @@ Binance Testnet:
 
 ## 🔧 기술적 구현
 
-### 실시간 데이터
+### python-binance 표준 연동
 ```python
-# 실시간 BTC/ETH 가격
-market_fetcher = RealMarketDataFetcher()
-btc_data = market_fetcher.get_current_price('BTC')
-eth_data = market_fetcher.get_current_price('ETH')
+# 공식 라이브러리 사용
+from binance_standard_connector import BinanceStandardConnector
+connector = BinanceStandardConnector(api_key, api_secret, testnet=True)
+
+# 계좌 정보 조회
+account_info = connector.get_account_info()
+if account_info['success']:
+    print(f"잔고: {account_info['data']['balances']}")
+
+# 실시간 가격 조회
+btc_price = connector.get_symbol_ticker('BTCUSDT')
+print(f"BTC 가격: ${btc_price['data']['price']}")
+```
+
+### 암호화된 API 키 관리
+```python
+# API 키 안전한 저장
+from database.api_manager import get_api_manager
+api_manager = get_api_manager()
+
+# 키 저장 (Fernet 암호화)
+success = api_manager.save_api_key(
+    user_id=1, exchange='binance',
+    api_key='your_key', api_secret='your_secret',
+    is_testnet=True
+)
+
+# 키 조회 (자동 복호화)
+credentials = api_manager.get_api_credentials(1, 'binance', True)
 ```
 
 ### AI 신호 생성
@@ -215,23 +249,17 @@ ai_system = EnhancedAITradingSystem(account_balance=10000, risk_percent=0.02)
 signal = ai_system.generate_enhanced_signal('BTC', market_data)
 ```
 
-### 선물 거래 실행
-```python
-# 선물 거래 실행
-connector = BinanceFuturesConnector(api_key, secret_key, testnet=True)
-connector.set_leverage('BTC/USDT', 5)
-result = connector.place_futures_order('BTC/USDT', 'BUY', 0.001)
-```
-
-## 📊 현재 시스템 상태
+## 📊 현재 시스템 상태 (2025년 1월 최신)
 
 ### ✅ 완료된 기능
-- **실시간 데이터**: BTC $115,715.97, ETH $4,482.07
-- **사용자 시스템**: 완전한 인증 및 세션 관리
-- **API 통합**: Binance Testnet 연결 완료
+- **실시간 데이터**: python-binance 라이브러리 기반 정확한 가격 데이터
+- **사용자 시스템**: 완전한 인증 및 세션 관리 (SQLAlchemy ORM)
+- **API 통합**: Binance 테스트넷/메인넷 연결 완료 (표준 패턴)
+- **암호화된 API 키**: Fernet 암호화로 안전한 저장
 - **AI 신호**: 실시간 신호 생성 가능
 - **선물 거래**: 1-10배 레버리지 지원
 - **리스크 관리**: 정교한 포지션 사이징
+- **데이터베이스**: 완전한 스키마 마이그레이션 시스템
 
 ### 🔄 실행 중인 서비스 (3-프로세스 아키텍처)
 - **포트 8501**: main_platform.py (웹 인터페이스)
@@ -259,17 +287,19 @@ result = connector.place_futures_order('BTC/USDT', 'BUY', 0.001)
 
 ## 📈 성과 및 안정성
 
-### 검증된 성능
-- **API 응답시간**: 평균 2-3ms
-- **데이터 정확도**: 실시간 Binance 가격 반영
-- **시스템 안정성**: 24/7 운영 가능
-- **보안**: SQLite 암호화, 안전한 API 키 관리
+### 검증된 성능 (2025년 1월 업데이트)
+- **API 응답시간**: python-binance 라이브러리 기반 최적화된 성능
+- **데이터 정확도**: 실시간 Binance 가격 반영 (공식 API)
+- **시스템 안정성**: 24/7 운영 가능, 자동 재시작 시스템
+- **보안**: Fernet 암호화, 안전한 API 키 관리, 데이터베이스 무결성
 
 ### 테스트 결과
-- **시장 데이터**: ✅ 실시간 BTC/ETH 가격 정확
+- **시장 데이터**: ✅ 실시간 BTC/ETH 가격 정확 (python-binance)
 - **AI 신호**: ✅ BUY/SELL/HOLD 신호 생성
 - **선물 거래**: ✅ 레버리지 및 마진 관리
 - **리스크 관리**: ✅ 포지션 사이징 정확도
+- **API 키 관리**: ✅ 암호화 저장/조회 완벽 작동
+- **데이터베이스**: ✅ 스키마 마이그레이션 시스템 완성
 
 ## 🔒 보안 및 주의사항
 
@@ -299,7 +329,29 @@ result = connector.place_futures_order('BTC/USDT', 'BUY', 0.001)
 - ✅ **자동 백업**: 완전한 재해 복구 시스템
 - ✅ **24/7 무인 운영**: PM2 3-프로세스 안정적 운영
 
-**지금 바로 http://localhost:8501 또는 http://nosignup.kr 에서 시작하세요!**
+**지금 바로 http://localhost:8502 또는 http://nosignup.kr 에서 시작하세요!**
+
+## 🔄 최신 업데이트 (2025년 1월)
+
+### 🛠️ 기술적 개선사항
+- **python-binance 1.0.29**: 공식 라이브러리로 API 연동 표준화
+- **Streamlit 1.40.0**: 최신 웹 프레임워크로 업그레이드
+- **데이터베이스 마이그레이션**: 자동 스키마 업데이트 시스템
+- **모듈 구조 최적화**: import 오류 완전 해결
+- **암호화 시스템**: Fernet 기반 안전한 API 키 관리
+
+### 🚀 배포 자동화
+- **Vultr 자동 배포**: `vultr_deploy.sh` 스크립트 완성
+- **PM2 프로세스 관리**: 3-프로세스 아키텍처 (웹, 봇, 백업)
+- **Nginx 리버스 프록시**: 고성능 웹 서버 설정
+- **SSL 지원**: Let's Encrypt 자동 인증서 발급
+- **로그 관리**: 체계적인 로그 수집 및 모니터링
+
+### 🔧 개발자 도구
+- **requirements.txt**: 모든 의존성 최신화
+- **ecosystem.config.js**: PM2 배포 설정 완성
+- **DEPLOYMENT_GUIDE.md**: 상세한 배포 가이드
+- **migration_script.py**: 데이터베이스 자동 마이그레이션
 
 ---
 

@@ -18,7 +18,7 @@ sys.path.insert(0, project_root)
 
 from auth import get_auth_manager, SessionManager
 from database import get_db_manager
-from security import get_api_key_manager
+from database.api_manager import get_api_manager as get_api_key_manager
 import logging
 
 # 로그 설정
