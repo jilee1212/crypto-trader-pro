@@ -51,6 +51,10 @@ crypto-trader-pro/
 ├── dashboard_components.py             # 대시보드 컴포넌트
 ├── trading_functions.py                # 거래 함수들
 ├── ui_helpers.py                       # UI 헬퍼
+├── ai_trading_signals.py               # AI 신호 시스템
+├── real_market_data.py                 # 실시간 시장 데이터
+├── binance_futures_connector.py        # 선물 거래 커넥터
+├── binance_testnet_connector.py        # 테스트넷 커넥터
 │
 ├── auto_trading/                       # 자동매매 시스템
 │   ├── __init__.py
@@ -79,6 +83,15 @@ crypto-trader-pro/
 │   ├── notifications.py               # 알림 시스템
 │   ├── security.py                     # 보안 유틸
 │   └── helpers.py                      # 헬퍼 함수들
+│
+├── strategies/                         # 거래 전략들
+│   ├── __init__.py
+│   ├── rsi_strategy.py                 # RSI 기반 전략
+│   └── multi_indicator.py              # 다중 지표 전략
+│
+├── backtesting/                        # 백테스팅 모듈
+│   ├── __init__.py
+│   └── backtest_engine.py              # 백테스팅 엔진
 │
 └── config/                             # 설정 파일들
     ├── auto_trading_config.json        # 자동매매 설정

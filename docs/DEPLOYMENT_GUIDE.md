@@ -49,7 +49,7 @@ cat config/config.json
 
 ```bash
 # Navigate to project directory
-cd C:/Users/user/crypto-trader-pro
+cd C:/Users/jilee/crypto-trader-pro
 
 # Initialize git if not already done
 git init

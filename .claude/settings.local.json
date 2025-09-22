@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir)",
+      "Bash(move:*)",
+      "Bash(move AUTO_TRADING_ARCHITECTURE.md docs/)",
+      "Bash(move README_AUTOMATED_TRADING.md docs/)",
+      "Bash(move MULTI_INDICATOR_STRATEGY_DESIGN.md docs/)",
+      "Bash(move UPDATED_ROADMAP_2025.md docs/)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
