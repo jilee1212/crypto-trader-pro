@@ -203,16 +203,38 @@ class BinanceTestnetConnector:
                 'details': 'Unexpected error during connection test'
             }
 
-    def get_account_info(self) -> Dict[str, Any]:
+    def get_account_info(self, api_key: str = None, api_secret: str = None) -> Dict[str, Any]:
         """계좌 정보 조회"""
         try:
-            if not self.api_key or not self.secret_key:
+            # 매개변수로 받은 API 키 사용 또는 기본 키 사용
+            current_api_key = api_key or self.api_key
+            current_secret_key = api_secret or self.secret_key
+
+            if not current_api_key or not current_secret_key:
                 return {
                     'success': False,
                     'error': 'API credentials not available'
                 }
 
-            result = self._make_request('account', signed=True)
+            # 임시로 API 키 설정
+            original_api_key = self.api_key
+            original_secret_key = self.secret_key
+
+            self.api_key = current_api_key
+            self.secret_key = current_secret_key
+
+            # 헤더 업데이트
+            self.session.headers.update({'X-MBX-APIKEY': current_api_key})
+
+            try:
+                result = self._make_request('account', signed=True)
+            except Exception as request_error:
+                # 원래 API 키 복원
+                self.api_key = original_api_key
+                self.secret_key = original_secret_key
+                if original_api_key:
+                    self.session.headers.update({'X-MBX-APIKEY': original_api_key})
+                raise request_error
 
             if result:
                 # 잔고 정보 처리
@@ -230,7 +252,7 @@ class BinanceTestnetConnector:
                             'total': total
                         })
 
-                return {
+                result_data = {
                     'success': True,
                     'account_type': result.get('accountType', 'Unknown'),
                     'permissions': result.get('permissions', []),
@@ -241,12 +263,29 @@ class BinanceTestnetConnector:
                     'total_assets': len(balances)
                 }
             else:
-                return {
+                result_data = {
                     'success': False,
                     'error': 'Failed to fetch account information'
                 }
 
+            # 원래 API 키 복원
+            self.api_key = original_api_key
+            self.secret_key = original_secret_key
+            if original_api_key:
+                self.session.headers.update({'X-MBX-APIKEY': original_api_key})
+
+            return result_data
+
         except Exception as e:
+            # 원래 API 키 복원 (예외 발생 시도)
+            try:
+                self.api_key = original_api_key
+                self.secret_key = original_secret_key
+                if original_api_key:
+                    self.session.headers.update({'X-MBX-APIKEY': original_api_key})
+            except:
+                pass
+
             return {
                 'success': False,
                 'error': f'Account info error: {str(e)}'
@@ -350,6 +389,184 @@ class BinanceTestnetConnector:
             return {
                 'success': False,
                 'error': f'Order error: {str(e)}'
+            }
+
+    def get_open_orders(self, api_key: str = None, api_secret: str = None, symbol: str = None) -> Dict[str, Any]:
+        """미체결 주문 조회"""
+        try:
+            # 매개변수로 받은 API 키 사용 또는 기본 키 사용
+            current_api_key = api_key or self.api_key
+            current_secret_key = api_secret or self.secret_key
+
+            if not current_api_key or not current_secret_key:
+                return {
+                    'success': False,
+                    'error': 'API credentials not available'
+                }
+
+            # 임시로 API 키 설정
+            original_api_key = self.api_key
+            original_secret_key = self.secret_key
+
+            self.api_key = current_api_key
+            self.secret_key = current_secret_key
+
+            # 헤더 업데이트
+            self.session.headers.update({'X-MBX-APIKEY': current_api_key})
+
+            params = {}
+            if symbol:
+                params['symbol'] = symbol.upper()
+
+            try:
+                result = self._make_request('openOrders', params=params, signed=True)
+            except Exception as request_error:
+                # 원래 API 키 복원
+                self.api_key = original_api_key
+                self.secret_key = original_secret_key
+                if original_api_key:
+                    self.session.headers.update({'X-MBX-APIKEY': original_api_key})
+                raise request_error
+
+            if result is not None:
+                orders = []
+                for order in result:
+                    orders.append({
+                        'order_id': order.get('orderId'),
+                        'symbol': order.get('symbol'),
+                        'side': order.get('side'),
+                        'type': order.get('type'),
+                        'quantity': float(order.get('origQty', 0)),
+                        'price': float(order.get('price', 0)),
+                        'status': order.get('status'),
+                        'time': datetime.fromtimestamp(order.get('time', 0) / 1000)
+                    })
+
+                return {
+                    'success': True,
+                    'orders': orders,
+                    'total_orders': len(orders)
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': 'Failed to fetch open orders'
+                }
+
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Open orders error: {str(e)}'
+            }
+
+    def get_order_history(self, symbol: str, limit: int = 50) -> Dict[str, Any]:
+        """주문 기록 조회"""
+        try:
+            if not self.api_key or not self.secret_key:
+                return {
+                    'success': False,
+                    'error': 'API credentials not available'
+                }
+
+            params = {
+                'symbol': symbol.upper(),
+                'limit': min(limit, 500)  # Binance limit
+            }
+
+            result = self._make_request('allOrders', params=params, signed=True)
+
+            if result is not None:
+                orders = []
+                for order in result:
+                    orders.append({
+                        'order_id': order.get('orderId'),
+                        'symbol': order.get('symbol'),
+                        'side': order.get('side'),
+                        'type': order.get('type'),
+                        'quantity': float(order.get('origQty', 0)),
+                        'executed_qty': float(order.get('executedQty', 0)),
+                        'price': float(order.get('price', 0)),
+                        'status': order.get('status'),
+                        'time': datetime.fromtimestamp(order.get('time', 0) / 1000),
+                        'update_time': datetime.fromtimestamp(order.get('updateTime', 0) / 1000)
+                    })
+
+                return {
+                    'success': True,
+                    'orders': orders,
+                    'total_orders': len(orders)
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': 'Failed to fetch order history'
+                }
+
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Order history error: {str(e)}'
+            }
+
+    def get_trade_history(self, symbol: str, limit: int = 50) -> Dict[str, Any]:
+        """거래 기록 조회 (실제 체결된 거래)"""
+        try:
+            if not self.api_key or not self.secret_key:
+                return {
+                    'success': False,
+                    'error': 'API credentials not available'
+                }
+
+            params = {
+                'symbol': symbol.upper(),
+                'limit': min(limit, 1000)  # Binance limit
+            }
+
+            result = self._make_request('myTrades', params=params, signed=True)
+
+            if result is not None:
+                trades = []
+                total_commission = 0
+                total_volume = 0
+
+                for trade in result:
+                    qty = float(trade.get('qty', 0))
+                    price = float(trade.get('price', 0))
+                    commission = float(trade.get('commission', 0))
+
+                    trades.append({
+                        'trade_id': trade.get('id'),
+                        'order_id': trade.get('orderId'),
+                        'symbol': trade.get('symbol'),
+                        'side': 'BUY' if trade.get('isBuyer') else 'SELL',
+                        'quantity': qty,
+                        'price': price,
+                        'commission': commission,
+                        'commission_asset': trade.get('commissionAsset'),
+                        'time': datetime.fromtimestamp(trade.get('time', 0) / 1000),
+                        'is_maker': trade.get('isMaker', False)
+                    })
+
+                    total_commission += commission
+                    total_volume += qty * price
+
+                return {
+                    'success': True,
+                    'trades': trades,
+                    'total_trades': len(trades),
+                    'total_commission': total_commission,
+                    'total_volume': total_volume
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': 'Failed to fetch trade history'
+                }
+
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Trade history error: {str(e)}'
             }
 
     def place_limit_order(self, symbol: str, side: str, quantity: float, price: float) -> Dict[str, Any]:

@@ -842,20 +842,104 @@ class AdvancedControlPanel:
         """시뮬레이션 상태 표시"""
         st.info("🎭 시뮬레이션 모드 - 가상 데이터 표시")
 
-        # 가상 지표
+        # 실제 API 데이터로 교체
         col1, col2, col3, col4 = st.columns(4)
 
-        with col1:
-            st.metric("가동 시간", "3.5시간")
+        try:
+            # API 키 확인 및 실제 데이터 조회
+            if hasattr(st.session_state, 'user') and st.session_state.user:
+                from database import get_db_manager
+                from security import get_api_key_manager
 
-        with col2:
-            st.metric("거래 성공률", "84.2%")
+                db_manager = get_db_manager()
+                api_manager = get_api_key_manager()
+                user_id = st.session_state.user['user_id']
 
-        with col3:
-            st.metric("오늘 수익", "$125.50")
+                # API 키 조회
+                credentials = api_manager.get_api_credentials(user_id, "binance", is_testnet=True)
 
-        with col4:
-            st.metric("활성 포지션", "2개")
+                if credentials:
+                    from binance_testnet_connector import BinanceTestnetConnector
+
+                    api_key, api_secret = credentials
+                    connector = BinanceTestnetConnector()
+                    connector.api_key = api_key
+                    connector.secret_key = api_secret
+                    connector.session.headers.update({'X-MBX-APIKEY': api_key})
+
+                    # 실제 포지션 조회
+                    open_orders = connector.get_open_orders()
+                    position_count = 0
+                    if open_orders and open_orders.get('success'):
+                        position_count = len(open_orders.get('orders', []))
+
+                    # 실제 계좌 잔고 조회
+                    account_info = connector.get_account_info()
+                    current_balance = 0.0
+                    if account_info and account_info.get('success'):
+                        balances = account_info.get('balances', [])
+                        for balance in balances:
+                            if balance['asset'] == 'USDT':
+                                current_balance = balance['total']
+                                break
+
+                    # 거래 기록에서 오늘 수익 계산
+                    recent_trades = db_manager.get_user_trades(user_id, limit=50)
+                    today_profit = 0.0
+                    today = datetime.now().date()
+                    for trade in recent_trades:
+                        if trade.timestamp.date() == today and trade.profit_loss:
+                            today_profit += trade.profit_loss
+
+                    # 성공률 계산
+                    success_rate = 0.0
+                    if recent_trades:
+                        profitable_trades = len([t for t in recent_trades if t.profit_loss and t.profit_loss > 0])
+                        success_rate = (profitable_trades / len(recent_trades)) * 100
+
+                    with col1:
+                        st.metric("계좌 잔고", f"{current_balance:,.2f} USDT")
+
+                    with col2:
+                        st.metric("거래 성공률", f"{success_rate:.1f}%")
+
+                    with col3:
+                        st.metric("오늘 수익", f"{today_profit:+.2f} USDT")
+
+                    with col4:
+                        st.metric("활성 포지션", f"{position_count}개")
+
+                else:
+                    # API 키 없을 때 기본값
+                    with col1:
+                        st.metric("계좌 잔고", "0.00 USDT")
+                    with col2:
+                        st.metric("거래 성공률", "0.0%")
+                    with col3:
+                        st.metric("오늘 수익", "0.00 USDT")
+                    with col4:
+                        st.metric("활성 포지션", "0개")
+            else:
+                # 사용자 세션 없을 때
+                with col1:
+                    st.metric("계좌 잔고", "로그인 필요")
+                with col2:
+                    st.metric("거래 성공률", "-")
+                with col3:
+                    st.metric("오늘 수익", "-")
+                with col4:
+                    st.metric("활성 포지션", "-")
+
+        except Exception as e:
+            # 오류 시 기본값 표시
+            with col1:
+                st.metric("계좌 잔고", "API 연결 오류")
+            with col2:
+                st.metric("거래 성공률", "-")
+            with col3:
+                st.metric("오늘 수익", "-")
+            with col4:
+                st.metric("활성 포지션", "-")
 
     def _save_settings(self, settings: Dict[str, Any]) -> bool:
         """설정 저장"""

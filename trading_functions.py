@@ -38,24 +38,18 @@ def get_market_data_fetcher():
     return RealMarketDataFetcher()
 
 def get_user_api_keys(user_id):
-    """사용자 API 키 조회"""
+    """사용자 API 키 조회 (호환성을 위해 유지)"""
     try:
-        conn = sqlite3.connect('crypto_trader_users.db')
-        cursor = conn.cursor()
+        from database.api_manager import get_api_manager
+        api_manager = get_api_manager()
+        credentials = api_manager.get_api_credentials(user_id, "binance", is_testnet=True)
 
-        cursor.execute('''
-            SELECT api_key_encrypted, secret_key_encrypted, is_testnet
-            FROM users WHERE id = ?
-        ''', (user_id,))
-
-        result = cursor.fetchone()
-        conn.close()
-
-        if result and result[0] and result[1]:
+        if credentials:
+            api_key, api_secret = credentials
             return {
-                'api_key': result[0],
-                'secret_key': result[1],
-                'is_testnet': bool(result[2])
+                'api_key': api_key,
+                'api_secret': api_secret,
+                'is_testnet': True
             }
         return None
 
@@ -64,26 +58,23 @@ def get_user_api_keys(user_id):
         return None
 
 def save_api_keys(user_id, api_key, secret_key, is_testnet):
-    """API 키 저장 (실제 환경에서는 암호화 필요)"""
+    """API 키 저장 (호환성을 위해 유지)"""
     try:
-        conn = sqlite3.connect('crypto_trader_users.db')
-        cursor = conn.cursor()
+        from database.api_manager import get_api_manager
+        api_manager = get_api_manager()
 
-        # 간단한 인코딩 (실제로는 강력한 암호화 사용 권장)
-        api_key_encoded = api_key
-        secret_key_encoded = secret_key
+        success = api_manager.save_api_key(
+            user_id=user_id,
+            exchange="binance",
+            api_key=api_key,
+            api_secret=secret_key,
+            is_testnet=is_testnet
+        )
 
-        cursor.execute('''
-            UPDATE users SET
-            api_key_encrypted = ?,
-            secret_key_encrypted = ?,
-            is_testnet = ?
-            WHERE id = ?
-        ''', (api_key_encoded, secret_key_encoded, is_testnet, user_id))
-
-        conn.commit()
-        conn.close()
-        return True, "API 키가 저장되었습니다."
+        if success:
+            return True, "API 키가 저장되었습니다."
+        else:
+            return False, "API 키 저장에 실패했습니다."
 
     except Exception as e:
         return False, f"API 키 저장 중 오류: {e}"
@@ -94,63 +85,129 @@ def get_real_account_balance(api_keys):
         return {'success': False, 'error': 'API 키가 없습니다'}
 
     try:
-        # EnhancedBinanceConnector를 사용하여 실제 계좌 정보 조회
-        connector = EnhancedBinanceConnector(
-            api_keys['api_key'],
-            api_keys['secret_key'],
-            api_keys['is_testnet']
-        )
+        # BinanceTestnetConnector를 사용하여 실제 계좌 정보 조회
+        from binance_testnet_connector import BinanceTestnetConnector
 
-        if connector.account_info:
-            balance = connector.account_info.get('total_balance', 0)
-            free_balance = connector.account_info.get('free_balance', 0)
-            used_balance = connector.account_info.get('used_balance', 0)
+        connector = BinanceTestnetConnector()
 
-            return {
-                'success': True,
-                'balance': float(balance),
-                'free': float(free_balance),
-                'used': float(used_balance),
-                'last_updated': connector.account_info.get('last_updated')
-            }
+        # API 키 설정 (동적으로)
+        connector.api_key = api_keys['api_key']
+        connector.secret_key = api_keys['secret_key']
+        connector.session.headers.update({'X-MBX-APIKEY': api_keys['api_key']})
+
+        account_result = connector.get_account_info()
+
+        if account_result and account_result.get('success'):
+            balances = account_result.get('balances', [])
+
+            # USDT 잔고 찾기
+            usdt_balance = None
+            for balance in balances:
+                if balance['asset'] == 'USDT':
+                    usdt_balance = balance
+                    break
+
+            if usdt_balance:
+                return {
+                    'success': True,
+                    'balance': usdt_balance['total'],
+                    'free': usdt_balance['free'],
+                    'used': usdt_balance['locked'],
+                    'account_info': account_result
+                }
+            else:
+                # USDT 잔고가 없으면 0으로 설정
+                return {
+                    'success': True,
+                    'balance': 0.0,
+                    'free': 0.0,
+                    'used': 0.0,
+                    'account_info': account_result
+                }
         else:
-            return {'success': False, 'error': 'API 연결 실패'}
+            error_msg = account_result.get('error', '계좌 정보를 불러올 수 없습니다')
+            return {'success': False, 'error': error_msg}
 
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
 def get_real_positions(api_keys):
-    """실제 Binance 포지션 조회"""
+    """실제 Binance 포지션 조회 (미체결 주문 기반)"""
     if not api_keys:
         return {'success': False, 'error': 'API 키가 없습니다'}
 
     try:
-        connector = EnhancedBinanceConnector(
-            api_keys['api_key'],
-            api_keys['secret_key'],
-            api_keys['is_testnet']
-        )
+        from binance_testnet_connector import BinanceTestnetConnector
 
-        positions_result = connector.get_real_positions()
-        return positions_result
+        connector = BinanceTestnetConnector()
+
+        # API 키 설정 (동적으로)
+        connector.api_key = api_keys['api_key']
+        connector.secret_key = api_keys['secret_key']
+        connector.session.headers.update({'X-MBX-APIKEY': api_keys['api_key']})
+
+        # 미체결 주문 조회 (포지션 대용)
+        open_orders_result = connector.get_open_orders()
+
+        if open_orders_result and open_orders_result.get('success'):
+            orders = open_orders_result.get('orders', [])
+
+            # 심볼별로 그룹화하여 포지션 계산
+            positions = {}
+            for order in orders:
+                symbol = order['symbol']
+                if symbol not in positions:
+                    positions[symbol] = {
+                        'symbol': symbol,
+                        'side': order['side'],
+                        'total_quantity': 0,
+                        'avg_price': 0,
+                        'orders': []
+                    }
+
+                positions[symbol]['total_quantity'] += order['quantity']
+                positions[symbol]['orders'].append(order)
+
+            active_positions = list(positions.values())
+
+            return {
+                'success': True,
+                'active_positions': len(active_positions),
+                'total_unrealized_pnl': 0,  # 미체결 주문은 PnL 없음
+                'positions': active_positions,
+                'raw_orders': orders
+            }
+        else:
+            error_msg = open_orders_result.get('error', '포지션 정보를 불러올 수 없습니다')
+            return {'success': False, 'error': error_msg}
 
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
-def get_real_trading_history(api_keys, limit=50):
+def get_real_trading_history(api_keys, symbol='BTCUSDT', limit=50):
     """실제 Binance 거래 기록 조회"""
     if not api_keys:
         return {'success': False, 'error': 'API 키가 없습니다'}
 
     try:
-        connector = EnhancedBinanceConnector(
-            api_keys['api_key'],
-            api_keys['secret_key'],
-            api_keys['is_testnet']
-        )
+        from binance_testnet_connector import BinanceTestnetConnector
 
-        history_result = connector.get_order_history(limit=limit)
-        return history_result
+        connector = BinanceTestnetConnector()
+
+        # API 키 설정 (동적으로)
+        connector.api_key = api_keys['api_key']
+        connector.secret_key = api_keys['secret_key']
+        connector.session.headers.update({'X-MBX-APIKEY': api_keys['api_key']})
+
+        # 주문 기록 조회
+        order_history_result = connector.get_order_history(symbol=symbol, limit=limit)
+
+        if order_history_result and order_history_result.get('success'):
+            return order_history_result
+        else:
+            # 실제 거래 기록 조회 시도
+            trade_history_result = connector.get_trade_history(symbol=symbol, limit=limit)
+            return trade_history_result
 
     except Exception as e:
         return {'success': False, 'error': str(e)}
@@ -597,19 +654,85 @@ def show_trading_history(real_account_data, api_keys):
 
     st.markdown("### 📈 거래 기록")
 
-    # 실제 거래 기록 조회
-    if api_keys and st.button("🔄 거래 기록 새로고침"):
-        st.session_state.refresh_trading_history = True
+    # USDT 페어만 심볼 선택
+    usdt_symbols = ["BTCUSDT", "ETHUSDT", "ADAUSDT", "BNBUSDT", "SOLUSDT", "DOGEUSDT", "DOTUSDT", "LTCUSDT"]
+    symbol = st.selectbox("거래 심볼 선택 (USDT 페어만)", usdt_symbols, key="history_symbol")
 
-    # 거래 기록 조회
-    trades = get_user_trades(st.session_state.user['id'])
+    col1, col2 = st.columns(2)
+    with col1:
+        # 실제 API 거래 기록 조회
+        if api_keys and st.button("🔄 실제 거래 기록 조회"):
+            with st.spinner("거래 기록을 조회하는 중..."):
+                real_history = get_real_trading_history(api_keys, symbol=symbol, limit=100)
+                st.session_state.real_trading_history = real_history
 
-    if trades:
-        display_trading_statistics(trades)
-        display_trades_table(trades)
-        display_performance_chart(trades)
-    else:
-        st.info("📭 거래 기록이 없습니다.")
+    with col2:
+        # 로컬 DB 거래 기록 조회
+        if st.button("🗃️ 로컬 거래 기록 조회"):
+            local_trades = get_user_trades(st.session_state.user['id'])
+            st.session_state.local_trading_history = local_trades
+
+    # 실제 API 거래 기록 표시
+    if hasattr(st.session_state, 'real_trading_history'):
+        real_history = st.session_state.real_trading_history
+        if real_history and real_history.get('success'):
+            st.markdown("#### 📊 실제 거래소 기록")
+
+            # 주문 기록이나 거래 기록에 따라 다르게 표시
+            if 'orders' in real_history:
+                orders = real_history['orders']
+                if orders:
+                    orders_df = pd.DataFrame(orders)
+                    st.dataframe(orders_df, use_container_width=True)
+
+                    # 간단한 통계
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("총 주문 수", len(orders))
+                    with col2:
+                        executed_orders = [o for o in orders if o.get('status') == 'FILLED']
+                        st.metric("체결된 주문", len(executed_orders))
+                    with col3:
+                        total_volume = sum(o.get('executed_qty', 0) for o in orders)
+                        st.metric("총 거래량", f"{total_volume:.4f}")
+                else:
+                    st.info("📭 거래 기록이 없습니다.")
+
+            elif 'trades' in real_history:
+                trades = real_history['trades']
+                if trades:
+                    trades_df = pd.DataFrame(trades)
+                    st.dataframe(trades_df, use_container_width=True)
+
+                    # 거래 통계 (USDT 기준)
+                    col1, col2, col3, col4 = st.columns(4)
+                    with col1:
+                        st.metric("총 거래 수", real_history.get('total_trades', 0))
+                    with col2:
+                        st.metric("총 거래량", f"{real_history.get('total_volume', 0):,.2f} USDT")
+                    with col3:
+                        commission = real_history.get('total_commission', 0)
+                        commission_asset = trades[0].get('commission_asset', 'USDT') if trades else 'USDT'
+                        st.metric("총 수수료", f"{commission:.6f} {commission_asset}")
+                    with col4:
+                        buy_trades = len([t for t in trades if t['side'] == 'BUY'])
+                        st.metric("매수/매도", f"{buy_trades}/{len(trades)-buy_trades}")
+                else:
+                    st.info("📭 거래 기록이 없습니다.")
+        else:
+            error_msg = real_history.get('error', '알 수 없는 오류') if real_history else 'API 호출 실패'
+            st.error(f"거래 기록 조회 실패: {error_msg}")
+
+    # 로컬 DB 거래 기록 표시
+    if hasattr(st.session_state, 'local_trading_history'):
+        local_trades = st.session_state.local_trading_history
+        if local_trades:
+            st.markdown("#### 🗃️ 로컬 거래 기록")
+            display_trading_statistics(local_trades)
+            display_trades_table(local_trades)
+            display_performance_chart(local_trades)
+        else:
+            st.info("📭 로컬 거래 기록이 없습니다.")
 
 def get_user_trades(user_id):
     """사용자 거래 기록 조회"""

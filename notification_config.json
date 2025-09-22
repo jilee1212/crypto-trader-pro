@@ -1,0 +1,64 @@
+{
+  "enabled": true,
+  "email": {
+    "enabled": false,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "smtp_username": "",
+    "smtp_password": "",
+    "from_email": "",
+    "use_tls": true
+  },
+  "telegram": {
+    "enabled": false,
+    "bot_token": "",
+    "api_url": "https://api.telegram.org"
+  },
+  "web": {
+    "enabled": true,
+    "db_path": "crypto_trader.db",
+    "max_notifications": 100,
+    "retention_days": 30
+  },
+  "default_user_settings": {
+    "email": {
+      "trade_executed_enabled": true,
+      "signal_generated_enabled": false,
+      "position_opened_enabled": true,
+      "position_closed_enabled": true,
+      "stop_loss_triggered_enabled": true,
+      "take_profit_triggered_enabled": true,
+      "balance_low_enabled": true,
+      "error_occurred_enabled": true,
+      "system_status_enabled": false,
+      "daily_report_enabled": true,
+      "min_priority": "normal"
+    },
+    "telegram": {
+      "trade_executed_enabled": true,
+      "signal_generated_enabled": true,
+      "position_opened_enabled": true,
+      "position_closed_enabled": true,
+      "stop_loss_triggered_enabled": true,
+      "take_profit_triggered_enabled": true,
+      "balance_low_enabled": true,
+      "error_occurred_enabled": true,
+      "system_status_enabled": true,
+      "daily_report_enabled": false,
+      "min_priority": "normal"
+    },
+    "web": {
+      "trade_executed_enabled": true,
+      "signal_generated_enabled": true,
+      "position_opened_enabled": true,
+      "position_closed_enabled": true,
+      "stop_loss_triggered_enabled": true,
+      "take_profit_triggered_enabled": true,
+      "balance_low_enabled": true,
+      "error_occurred_enabled": true,
+      "system_status_enabled": true,
+      "daily_report_enabled": true,
+      "min_priority": "low"
+    }
+  }
+}

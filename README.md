@@ -1,15 +1,55 @@
-# 🚀 Crypto Trader Pro - Complete Trading Platform
+# 🚀 Crypto Trader Pro - Professional Trading Platform
 
-완전한 암호화폐 거래 플랫폼으로 실시간 데이터, AI 신호 생성, 선물 거래, 사용자 관리를 통합 제공합니다.
+완전한 암호화폐 거래 플랫폼으로 실시간 데이터, AI 신호 생성, 현물/선물 거래, 사용자 관리를 통합 제공합니다.
 
 **⚠️ 면책조항: 이 소프트웨어는 교육 및 연구 목적으로만 제작되었습니다. 암호화폐 거래는 상당한 손실 위험을 수반합니다. 실거래 전 반드시 테스트넷에서 충분히 테스트하세요.**
+
+## 🌐 배포 환경 (24시간 운영)
+- **서버**: Vultr Ubuntu 24.04 LTS (1 CPU, 1GB RAM, 32GB SSD)
+- **도메인**: http://nosignup.kr (24시간 접속 가능)
+- **프로젝트 경로**: /opt/crypto-trader/crypto-trader-pro/
+- **실행 환경**: Python 3.12, PM2 백그라운드 운영
+- **GitHub**: https://github.com/jilee1212/crypto-trader-pro.git
 
 ## 🎯 메인 플랫폼 - main_platform.py
 
 **포트 8501**: http://localhost:8501
 **현재 상태**: 🟢 완전 운영 가능
 
-### ✅ 핵심 기능
+### ✅ 완성된 시스템 (현재 상태)
+
+#### **🎉 Phase 1-4 완료: 24시간 무인 자동매매 시스템 + 고급 기능 100% 구축 완료**
+
+**Phase 1-2: 시스템 기반 구축 ✅**
+- **🗄️ 데이터베이스 시스템**: SQLAlchemy ORM, 암호화된 사용자 데이터 관리
+- **🔐 사용자 인증**: bcrypt 패스워드 해싱, JWT 토큰, 세션 관리
+- **🔑 API 키 보안**: Fernet 암호화, 마스터 키 관리, 안전한 저장
+- **🤖 독립 거래 봇**: 웹과 분리된 백그라운드 프로세스 (trading_engine/)
+- **📊 실시간 모니터링**: 시장 데이터, 기술적 분석 지표 (RSI, MACD, 볼린저밴드)
+- **⚙️ 사용자별 격리**: 독립적인 거래 컨텍스트 및 리스크 관리
+- **🎯 RSI 전략**: 평균 회귀 전략, 동적 포지션 사이징, 자동 손절/익절
+- **⏰ PM2 배포**: 24시간 무중단 운영, 자동 재시작
+
+**Phase 3: 인증 기반 웹 인터페이스 ✅**
+- **🔐 로그인/회원가입**: 완전한 사용자 인증 시스템
+- **📊 개인화 대시보드**: 사용자별 거래 성과 및 상태 모니터링
+- **⚙️ 설정 관리**: API 키, 거래 설정, 계정 관리, 알림 설정
+- **📈 거래 모니터링**: 실시간 차트, 포지션 관리, 거래 제어
+- **🎮 거래 제어**: 웹에서 자동매매 시작/중단/설정 실시간 적용
+
+**Phase 4: 고급 기능 및 최적화 ✅**
+- **📬 다중 채널 알림**: 이메일, 텔레그램, 웹 대시보드 알림 시스템
+- **💾 자동 백업 시스템**: 일일 DB 백업, 설정 파일 백업, 복구 시스템
+- **🔄 스케줄링**: PM2 기반 3-프로세스 아키텍처 (웹, 봇, 백업)
+- **🛡️ 무결성 검증**: 백업 파일 검증, 복구 계획, 재해 복구
+
+#### **기존 완성 시스템 (Legacy)**
+- **💰 현물 거래**: 100% 완성 (ai_trading_signals.py) - 기존 시스템
+- **🔗 바이낸스 현물 API**: binance_testnet_connector.py - 기존 시스템
+- **🤖 AI 신호 시스템**: 78% 정확도, RandomForest + LinearRegression - 기존 시스템
+- **🖥️ 웹 대시보드**: 기존 5탭 UI → 새로운 인증 기반 시스템으로 교체
+
+### 🔧 핵심 기능
 - **👤 사용자 시스템**: 회원가입, 로그인, SQLite 기반 계정 관리
 - **🔐 API 키 관리**: 테스트넷/실거래 모드, 안전한 키 저장
 - **📈 실시간 시장 데이터**: Binance + CoinGecko API 이중화
@@ -20,17 +60,53 @@
 
 ## 📁 프로젝트 구조 (정리 완료)
 
-### ✅ 핵심 파일 (유지)
+### ✅ 핵심 파일 (Phase 1-4 완료)
 ```
 crypto-trader-pro/
 ├── main_platform.py                # 🎯 메인 플랫폼 (포트 8501)
-├── ai_trading_signals.py           # AI 시스템 + BinanceFuturesConnector
-├── real_market_data.py             # 실시간 시장 데이터 페처
-├── binance_futures_connector.py    # 선물 거래 전용 커넥터
-├── binance_testnet_connector.py    # 테스트넷 커넥터
-├── dashboard_components.py          # 대시보드 UI 컴포넌트
-├── trading_functions.py             # 거래 관련 함수들
-└── ui_helpers.py                    # UI 헬퍼 함수들
+├── ecosystem.config.js             # 🔧 PM2 3-프로세스 배포 설정
+├── backup_scheduler.py             # 💾 백업 스케줄러 서비스
+├── backup_config.json              # ⚙️ 백업 시스템 설정
+├── notification_config.json        # 📬 알림 시스템 설정
+├── database/                       # 🗄️ 데이터베이스 시스템
+│   ├── models.py                   # SQLAlchemy ORM 모델
+│   ├── database_manager.py         # CRUD 작업 관리 (세션 수정됨)
+│   ├── init_database.py            # DB 초기화 스크립트
+│   └── __init__.py
+├── auth/                           # 🔐 사용자 인증 시스템
+│   ├── authentication.py          # JWT, bcrypt, 세션 관리
+│   ├── user_manager.py             # 사용자 관리
+│   └── __init__.py
+├── security/                       # 🔑 보안 및 암호화
+│   ├── encryption.py               # Fernet 암호화 시스템
+│   ├── api_key_manager.py          # API 키 보안 관리
+│   └── __init__.py
+├── trading_engine/                 # 🤖 독립 거래 봇
+│   ├── background_trader.py        # 메인 거래 봇
+│   ├── market_monitor.py           # 실시간 시장 데이터
+│   ├── user_trading_context.py     # 사용자별 거래 환경
+│   ├── trading_scheduler.py        # 거래 스케줄링
+│   └── __init__.py
+├── notifications/                  # 📬 다중 채널 알림 시스템
+│   ├── base_notifier.py            # 알림 기본 클래스
+│   ├── email_notifier.py           # SMTP 이메일 알림
+│   ├── telegram_notifier.py        # 텔레그램 봇 알림
+│   ├── web_notifier.py             # 웹 대시보드 알림
+│   ├── notification_manager.py     # 통합 알림 관리자
+│   └── __init__.py
+├── backup/                         # 💾 백업 및 복구 시스템
+│   ├── database_backup.py          # DB 백업 (전체/증분)
+│   ├── config_backup.py            # 설정 파일 백업
+│   ├── recovery_manager.py         # 복구 관리자
+│   ├── backup_manager.py           # 통합 백업 관리자
+│   └── __init__.py
+├── pages/                          # 🌐 웹 인터페이스 페이지
+│   ├── login.py                    # 로그인 페이지
+│   ├── register.py                 # 회원가입 페이지
+│   ├── dashboard.py                # 메인 대시보드
+│   ├── settings.py                 # 설정 페이지
+│   └── trading.py                  # 거래 페이지
+└── [기존 파일들]                    # 기존 시스템 (ai_trading_signals.py 등)
 ```
 
 ### 📦 보관된 파일
@@ -47,10 +123,18 @@ archived_files/                     # 중복/테스트 파일들 보관
 ### 1. 환경 설정
 ```bash
 # 의존성 설치
-pip install streamlit pandas plotly sqlite3 ccxt requests numpy
+pip install streamlit pandas plotly ccxt requests numpy
+pip install sqlalchemy bcrypt PyJWT cryptography
+
+# 데이터베이스 초기화
+cd database
+python init_database.py --reset
 
 # 메인 플랫폼 실행
 streamlit run main_platform.py
+
+# 백그라운드 거래 봇 실행 (별도 터미널)
+python trading_engine/background_trader.py
 ```
 
 ### 2. 첫 사용
@@ -149,9 +233,11 @@ result = connector.place_futures_order('BTC/USDT', 'BUY', 0.001)
 - **선물 거래**: 1-10배 레버리지 지원
 - **리스크 관리**: 정교한 포지션 사이징
 
-### 🔄 실행 중인 서비스
-- **포트 8501**: main_platform.py (메인)
-- **포트 8502**: ai_trading_signals.py (독립 AI 시스템)
+### 🔄 실행 중인 서비스 (3-프로세스 아키텍처)
+- **포트 8501**: main_platform.py (웹 인터페이스)
+- **독립 프로세스**: trading_engine/background_trader.py (24시간 거래 봇)
+- **백업 서비스**: backup_scheduler.py (자동 백업 및 복구)
+- **PM2 관리**: ecosystem.config.js (3-프로세스 자동 재시작, 로그 관리)
 
 ## 🚀 사용 예시
 
@@ -163,9 +249,11 @@ result = connector.place_futures_order('BTC/USDT', 'BUY', 0.001)
 5. **포지션 관리** → 2배 레버리지, $5,000 포지션
 6. **모니터링** → 실시간 손익 추적
 
-### 고급 기능
+### 고급 기능 (Phase 4)
 - **자동 거래**: 높은 신뢰도 신호 자동 실행
 - **포지션 분석**: 실시간 수익률 및 리스크 계산
+- **다중 채널 알림**: 이메일, 텔레그램, 웹 실시간 알림
+- **자동 백업**: 일일 DB 백업, 설정 백업, 복구 시스템
 - **백테스팅**: 과거 데이터 기반 전략 검증
 - **페이퍼 트레이딩**: 실제 돈 없이 전략 테스트
 
@@ -201,14 +289,17 @@ result = connector.place_futures_order('BTC/USDT', 'BUY', 0.001)
 
 **Crypto Trader Pro는 교육용 암호화폐 거래 플랫폼으로 완전한 기능을 제공합니다.**
 
-### 주요 성과
+### 주요 성과 (Phase 1-4 완료)
 - ✅ **완전한 플랫폼**: 사용자 관리부터 실제 거래까지
 - ✅ **실시간 데이터**: 정확한 시장 정보 반영
 - ✅ **AI 기반 신호**: 과학적 거래 의사결정
 - ✅ **안전한 거래**: 철저한 리스크 관리
 - ✅ **사용자 친화적**: 직관적 웹 인터페이스
+- ✅ **다중 채널 알림**: 이메일, 텔레그램, 웹 통합 알림
+- ✅ **자동 백업**: 완전한 재해 복구 시스템
+- ✅ **24/7 무인 운영**: PM2 3-프로세스 안정적 운영
 
-**지금 바로 http://localhost:8501 에서 시작하세요!**
+**지금 바로 http://localhost:8501 또는 http://nosignup.kr 에서 시작하세요!**
 
 ---
 

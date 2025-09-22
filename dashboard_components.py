@@ -11,8 +11,11 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 # Import our modules
+from database.database_manager import get_db_manager
+from database.api_manager import get_api_manager
+from binance_testnet_connector import BinanceTestnetConnector
 from trading_functions import (
-    get_user_api_keys, get_real_account_balance, get_real_positions,
+    get_real_account_balance, get_real_positions,
     get_market_data_fetcher, handle_quick_action
 )
 # Import UI helpers for performance charts
@@ -26,12 +29,14 @@ def show_main_dashboard():
         st.markdown(f"### 👋 {st.session_state.user['username']}님")
 
         # API 키 상태 확인
-        api_keys = get_user_api_keys(st.session_state.user['id'])
-        if api_keys:
+        api_manager = get_api_manager()
+        credentials = api_manager.get_api_credentials(st.session_state.user['id'], "binance", is_testnet=True)
+        if credentials:
             st.success("✅ API 연결됨")
-            st.info(f"모드: {'테스트넷' if api_keys['is_testnet'] else '실거래'}")
+            st.info("모드: 테스트넷")
         else:
             st.error("❌ API 키 없음")
+            st.info("💡 설정에서 API 키를 입력해주세요")
 
         # 실제 API에서 계좌 정보 가져오기 (캐시된 데이터 사용)
         if api_keys and api_keys.get('api_key'):
@@ -301,12 +306,47 @@ def show_main_dashboard():
             from utils.real_data_fetcher import RealDataFetcher
 
             # API 키 가져오기
-            api_keys = {}
-            if 'api_keys' in st.session_state:
-                api_keys = st.session_state.api_keys
+            api_manager = get_api_manager()
+            credentials = api_manager.get_api_credentials(st.session_state.user['id'], "binance", is_testnet=True)
 
-            data_fetcher = RealDataFetcher(api_keys)
-            real_stats = data_fetcher.get_real_trading_stats()
+            real_stats = {'active_positions': 0, 'today_pnl': 0.0, 'success_rate': 0.0, 'total_trades': 0}
+
+            if credentials:
+                api_key, api_secret = credentials
+                connector = BinanceTestnetConnector()
+                try:
+                    # 실제 통계 계산
+                    account_info = connector.get_account_info(api_key, api_secret)
+                    open_orders = connector.get_open_orders(api_key, api_secret)
+
+                    if account_info.get('success') and open_orders.get('success'):
+                        orders = open_orders.get('data', [])
+                        usdt_orders = [order for order in orders if order['symbol'].endswith('USDT')]
+
+                        # 데이터베이스에서 거래 기록 조회
+                        db_manager = get_db_manager()
+                        trades = db_manager.get_user_trades(st.session_state.user['id'], limit=100)
+
+                        # 오늘 손익 계산
+                        from datetime import datetime
+                        today = datetime.now().date()
+                        today_trades = [t for t in trades if t.timestamp.date() == today]
+                        today_pnl = sum(t.profit_loss or 0.0 for t in today_trades)
+
+                        # 성공률 계산
+                        success_rate = 0.0
+                        if trades:
+                            profitable_trades = [t for t in trades if (t.profit_loss or 0.0) > 0]
+                            success_rate = (len(profitable_trades) / len(trades)) * 100
+
+                        real_stats = {
+                            'active_positions': len(usdt_orders),
+                            'today_pnl': today_pnl,
+                            'success_rate': success_rate,
+                            'total_trades': len(trades)
+                        }
+                except Exception as e:
+                    st.warning(f"API 데이터 조회 중 오류: {e}")
 
             status_col1, status_col2, status_col3, status_col4 = st.columns(4)
 
@@ -384,7 +424,7 @@ def show_main_dashboard():
                         ))
 
                         fig.update_layout(
-                            title="30일 포트폴리오 성과",
+                            title="30일 포트폴리오 성과 (USDT 기준)",
                             height=400,
                             xaxis_title="날짜",
                             yaxis_title="포트폴리오 가치 (USDT)"
@@ -752,33 +792,43 @@ def show_dashboard_overview(risk_percentage, api_keys, real_account_data):
         positions_result = st.session_state.dashboard_positions
 
         if positions_result and positions_result.get('success'):
+            # 새로운 API 구조에 맞게 수정
+            active_positions_count = positions_result.get('active_positions', 0)
+            total_pnl = positions_result.get('total_unrealized_pnl', 0)
             positions_data = positions_result.get('positions', [])
-            total_positions = len([p for p in positions_data if float(p.get('contracts', 0)) != 0])
-            total_pnl = sum(float(p.get('unrealizedPnl', 0)) for p in positions_data)
+            raw_orders = positions_result.get('raw_orders', [])
 
             col1, col2, col3, col4 = st.columns(4)
             with col1:
-                st.metric("활성 포지션", total_positions)
+                st.metric("활성 포지션", active_positions_count)
             with col2:
-                st.metric("미실현 손익", f"${total_pnl:.2f}")
+                st.metric("미체결 주문", len(raw_orders))
             with col3:
-                pnl_color = "normal" if total_pnl >= 0 else "inverse"
-                if account_balance > 0:
-                    pnl_percentage = (total_pnl / account_balance) * 100
-                    st.metric("수익률", f"{pnl_percentage:+.2f}%", delta_color=pnl_color)
-                else:
-                    st.metric("수익률", "0.00%")
+                st.metric("미실현 손익", f"${total_pnl:.2f}")
             with col4:
                 # 수동 새로고침 버튼
                 if st.button("🔄 포지션 새로고침", key="refresh_dashboard_positions"):
                     del st.session_state.dashboard_positions
                     st.rerun()
 
-            if total_positions > 0:
-                st.info("📋 포지션 상세 정보는 '포트폴리오' 탭에서 확인하세요.")
+            # 포지션 상세 정보 표시
+            if active_positions_count > 0:
+                st.markdown("#### 📋 미체결 주문 현황")
+                for position in positions_data:
+                    with st.expander(f"{position['symbol']} - {position['side']} (수량: {position['total_quantity']:.4f})"):
+                        orders_df = pd.DataFrame(position['orders'])
+                        if not orders_df.empty:
+                            # 필요한 컬럼만 선택
+                            display_cols = ['side', 'type', 'quantity', 'price', 'status', 'time']
+                            available_cols = [col for col in display_cols if col in orders_df.columns]
+                            st.dataframe(orders_df[available_cols], use_container_width=True)
+            elif len(raw_orders) > 0:
+                st.info("📋 미체결 주문이 있지만 포지션으로 그룹화되지 않았습니다.")
             else:
                 st.info("📭 현재 활성 포지션이 없습니다.")
         else:
+            error_msg = positions_result.get('error', '알 수 없는 오류')
+            st.warning(f"⚠️ 포지션 조회 실패: {error_msg}")
             st.info("📭 현재 활성 포지션이 없습니다.")
     else:
         st.warning("⚠️ 포지션 조회를 위해 API 키를 설정해주세요.")
@@ -1022,8 +1072,9 @@ def get_portfolio_risk_data(account_balance, api_keys):
 
                 if positions_result and positions_result.get('success'):
                     real_positions = positions_result.get('positions', [])
-                    total_margin_used = sum(float(pos.get('initialMargin', 0)) for pos in real_positions)
-                    total_unrealized_pnl = sum(float(pos.get('unrealizedPnl', 0)) for pos in real_positions)
+                    # 새로운 API 구조에 맞게 수정 - 미체결 주문에서는 margin 정보가 없음
+                    total_margin_used = 0  # 미체결 주문은 마진 사용 없음
+                    total_unrealized_pnl = positions_result.get('total_unrealized_pnl', 0)
 
             except Exception as e:
                 st.warning(f"포지션 데이터 조회 실패: {e}")
@@ -1146,14 +1197,14 @@ def show_portfolio_metrics(risk_data):
 
     with col1:
         st.metric(
-            label="💰 계좌 잔고",
-            value=f"${risk_data['account_balance']:,.2f}",
+            label="💰 계좌 잔고 (USDT)",
+            value=f"{risk_data['account_balance']:,.2f} USDT",
             delta=None
         )
 
         st.metric(
-            label="📈 미실현 손익",
-            value=f"${risk_data['total_unrealized_pnl']:,.2f}",
+            label="📈 미실현 손익 (USDT)",
+            value=f"{risk_data['total_unrealized_pnl']:,.2f} USDT",
             delta=f"{(risk_data['total_unrealized_pnl']/risk_data['account_balance']*100):+.2f}%" if risk_data['account_balance'] > 0 else "0%"
         )
 
@@ -1277,13 +1328,12 @@ def show_risk_control_panel(api_keys):
 def show_notification_simulation(api_keys=None):
     """알림 시스템 - 실제 데이터 기반"""
 
-    # RealDataFetcher 초기화
-    from utils.real_data_fetcher import RealDataFetcher
-    data_fetcher = RealDataFetcher(api_keys)
+    # API 키 가져오기
+    api_manager = get_api_manager()
+    credentials = api_manager.get_api_credentials(st.session_state.user['id'], "binance", is_testnet=True)
 
     # 데이터 소스 표시
-    system_status = data_fetcher.get_system_status()
-    api_status = system_status.get('api_status', '오류')
+    api_status = "연결됨" if credentials else "오류"
 
     if api_status == "연결됨":
         st.success("🟢 실제 거래 이벤트 기반 알림")
@@ -1374,13 +1424,12 @@ def show_performance_analysis_simulation(api_keys=None):
     """성과 분석 - 실제 API 데이터 기반"""
     import numpy as np
 
-    # RealDataFetcher 초기화
-    from utils.real_data_fetcher import RealDataFetcher
-    data_fetcher = RealDataFetcher(api_keys)
+    # API 키 가져오기
+    api_manager = get_api_manager()
+    credentials = api_manager.get_api_credentials(st.session_state.user['id'], "binance", is_testnet=True)
 
     # 데이터 소스 표시
-    system_status = data_fetcher.get_system_status()
-    api_status = system_status.get('api_status', '오류')
+    api_status = "연결됨" if credentials else "오류"
 
     if api_status == "연결됨":
         st.success("🟢 실제 API 데이터")
@@ -1485,9 +1534,9 @@ def show_performance_analysis_simulation(api_keys=None):
             ))
 
             fig.update_layout(
-                title="포트폴리오 가치 변화",
+                title="포트폴리오 가치 변화 (USDT 기준)",
                 xaxis_title="날짜",
-                yaxis_title="포트폴리오 가치 ($)",
+                yaxis_title="포트폴리오 가치 (USDT)",
                 hovermode='x unified',
                 showlegend=False
             )
@@ -1505,13 +1554,12 @@ def show_performance_analysis_simulation(api_keys=None):
 def show_backtesting_simulation(api_keys=None):
     """백테스팅 - 실제 데이터 기반"""
 
-    # RealDataFetcher 초기화
-    from utils.real_data_fetcher import RealDataFetcher
-    data_fetcher = RealDataFetcher(api_keys)
+    # API 키 가져오기
+    api_manager = get_api_manager()
+    credentials = api_manager.get_api_credentials(st.session_state.user['id'], "binance", is_testnet=True)
 
     # 데이터 소스 표시
-    system_status = data_fetcher.get_system_status()
-    api_status = system_status.get('api_status', '오류')
+    api_status = "연결됨" if credentials else "오류"
 
     if api_status == "연결됨":
         st.success("🟢 실제 시장 데이터 기반 백테스팅")

@@ -52,11 +52,24 @@ streamlit-echarts>=0.4.0,<1.0.0
 # Data visualization (future use)
 # matplotlib>=3.7.0,<4.0.0
 
-# Telegram notifications (optional)
-# python-telegram-bot>=20.7,<21.0
+# Telegram notifications (enabled for Phase 4)
+aiohttp>=3.9.0,<4.0.0
 
 # Enhanced logging (optional)
 # loguru>=0.7.0,<1.0.0
+
+# ================================================================
+# PHASE 4 DEPENDENCIES (Notifications & Backup)
+# ================================================================
+
+# Database ORM and encryption
+sqlalchemy>=2.0.0,<3.0.0
+bcrypt>=4.0.0,<5.0.0
+pyjwt>=2.8.0,<3.0.0
+cryptography>=41.0.0,<42.0.0
+
+# Backup and compression
+schedule>=1.2.0
 
 # ================================================================
 # INSTALLATION

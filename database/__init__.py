@@ -1,28 +1,18 @@
 """
-🗄️ Database Package - 데이터베이스 관리
-
-자동매매 시스템의 데이터베이스 관리 패키지
-- 자동매매 설정 저장
-- 거래 로그 관리
-- 성과 데이터 추적
-- 시스템 상태 저장
+Database Package for Crypto Trader Pro
+24시간 무인 자동매매 시스템의 데이터베이스 관리
 """
 
-from .auto_trading_db import AutoTradingDB
 from .models import (
-    AutoTradingConfig,
-    AutoTradingLog,
-    AISignalLog,
-    PerformanceData
+    Base, User, ApiKey, TradingSettings,
+    TradingSession, TradeHistory, NotificationSettings
 )
-
-__version__ = "1.0.0"
-__author__ = "Crypto Trader Pro Team"
+from .database_manager import DatabaseManager, get_db_manager
+from .api_manager import APIManager, get_api_manager
 
 __all__ = [
-    'AutoTradingDB',
-    'AutoTradingConfig',
-    'AutoTradingLog',
-    'AISignalLog',
-    'PerformanceData'
+    'Base', 'User', 'ApiKey', 'TradingSettings',
+    'TradingSession', 'TradeHistory', 'NotificationSettings',
+    'DatabaseManager', 'get_db_manager',
+    'APIManager', 'get_api_manager'
 ]

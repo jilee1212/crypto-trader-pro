@@ -1,5 +1,7 @@
 # Crypto Trader Pro - Setup Guide
 
+**🎉 Phase 1-4 완료: 24시간 무인 자동매매 시스템 + 고급 기능 100% 구축 완료**
+
 This guide will help you safely set up and configure Crypto Trader Pro for educational and research purposes.
 
 ## ⚠️ Critical Security Warning
@@ -25,25 +27,80 @@ source crypto-trader-env/bin/activate  # Linux/Mac
 crypto-trader-env\Scripts\activate     # Windows
 ```
 
-### 1.2 Install Dependencies
+### 1.2 Install Dependencies (Phase 4 Complete)
 ```bash
-# Install core dependencies
+# Install all dependencies (includes Phase 4 additions)
 pip install -r requirements.txt
 
-# Verify installation
+# Verify core installations
 python -c "import ccxt; print('CCXT version:', ccxt.__version__)"
+python -c "import sqlalchemy; print('SQLAlchemy version:', sqlalchemy.__version__)"
+python -c "import streamlit; print('Streamlit version:', streamlit.__version__)"
+
+# Initialize database (Phase 1-4 system)
+cd database
+python init_database.py --reset
 ```
 
-## Step 2: Configuration Setup
+## Step 2: Quick Start (Phase 4 System)
 
-### 2.1 Create Configuration Files
+### 2.1 Run the Complete System
+```bash
+# Start the main web platform
+streamlit run main_platform.py
+
+# In a separate terminal, start the background trading bot
+python trading_engine/background_trader.py
+
+# In another terminal, start the backup scheduler
+python backup_scheduler.py
+```
+
+### 2.2 First-Time Setup
+1. **Register**: http://localhost:8501 에서 계정 생성
+2. **API 설정**: 사이드바 → API 설정 → Binance 테스트넷 키 입력
+3. **거래 설정**: 계좌 잔고, 리스크 비율, 거래 모드 설정
+4. **AI 신호**: AI 신호 탭에서 실시간 신호 생성 및 확인
+
+### 2.3 Phase 4 System Configuration
+
+#### Notification System Setup (알림 시스템)
+```json
+# notification_config.json 수정
+{
+  "email": {
+    "enabled": true,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_username": "your_email@gmail.com",
+    "smtp_password": "your_app_password"
+  },
+  "telegram": {
+    "enabled": true,
+    "bot_token": "your_telegram_bot_token"
+  }
+}
+```
+
+#### Backup System Setup (백업 시스템)
+```json
+# backup_config.json 자동 생성됨
+{
+  "enabled": true,
+  "auto_backup_enabled": true,
+  "retention_days": 30
+}
+```
+
+## Step 3: Advanced Configuration (Legacy)
+
+### 3.1 Create Configuration Files
 ```bash
 # Copy configuration templates
 cp config/config.json.example config/config.json
 cp .env.template .env
 ```
 
-### 2.2 Edit Environment Variables (.env)
+### 3.2 Edit Environment Variables (.env)
 ```bash
 # Open .env file and configure (START WITH TESTNET!)
 TRADING_MODE=testnet

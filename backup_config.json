@@ -1,0 +1,53 @@
+{
+  "enabled": true,
+  "auto_backup_enabled": true,
+  "database": {
+    "db_path": "crypto_trader.db",
+    "backup_dir": "backup/database",
+    "retention_days": 30,
+    "compression": true
+  },
+  "config": {
+    "project_root": ".",
+    "backup_dir": "backup/configs",
+    "retention_days": 30,
+    "compression": true,
+    "backup_patterns": [
+      "ecosystem.config.js",
+      "CLAUDE.md",
+      "*.py",
+      "requirements.txt",
+      "package.json",
+      ".env",
+      ".gitignore",
+      "README.md",
+      "auth/",
+      "security/",
+      "database/",
+      "trading_engine/",
+      "notifications/",
+      "backup/",
+      "pages/",
+      "components/"
+    ],
+    "exclude_patterns": [
+      "__pycache__/",
+      "*.pyc",
+      "*.pyo",
+      ".git/",
+      "node_modules/",
+      "*.log",
+      "crypto_trader.db",
+      "backup/database/",
+      "backup/recovery/",
+      ".venv/",
+      "venv/",
+      "archived_files/"
+    ]
+  },
+  "recovery": {
+    "project_root": ".",
+    "backup_dir": "backup",
+    "recovery_dir": "backup/recovery"
+  }
+}

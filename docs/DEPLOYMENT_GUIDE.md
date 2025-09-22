@@ -1,4 +1,20 @@
-# GitHub Deployment Guide for Crypto Trader Pro
+# 🚀 Crypto Trader Pro - 배포 가이드
+
+## 🌐 현재 배포 상태
+- **운영 서버**: Vultr Ubuntu 24.04 LTS (1 CPU, 1GB RAM, 32GB SSD)
+- **도메인**: http://nosignup.kr (24시간 운영 중)
+- **프로젝트 경로**: /opt/crypto-trader/crypto-trader-pro/
+- **실행 환경**: Python 3.12, PM2 백그라운드 실행
+- **GitHub 저장소**: https://github.com/jilee1212/crypto-trader-pro.git
+
+## 🎯 완성된 시스템 현황 (Phase 1-4 완료)
+- ✅ **데이터베이스 시스템**: SQLAlchemy ORM, 사용자 인증, API 키 암호화
+- ✅ **독립 거래 봇**: 웹과 분리된 백그라운드 프로세스
+- ✅ **인증 웹 인터페이스**: 사용자별 개인화 대시보드
+- ✅ **다중 채널 알림**: 이메일, 텔레그램, 웹 통합 알림 시스템
+- ✅ **자동 백업 시스템**: 일일 DB 백업, 설정 백업, 복구 시스템
+- ✅ **PM2 3-프로세스**: 웹, 봇, 백업 독립 관리 아키텍처
+- ✅ **24시간 무인 운영**: http://nosignup.kr 24시간 운영 중
 
 This guide will walk you through deploying Crypto Trader Pro to GitHub safely and securely.
 
