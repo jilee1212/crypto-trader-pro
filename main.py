@@ -44,7 +44,7 @@ try:
     from utils import MarketDataCollector, TradingBotException
     from data import CryptoDatabaseManager, RealTimeDataCollector, DataCollectionScheduler
 except ImportError as e:
-    print(f"❌ Failed to import required modules: {e}")
+    print(f"[ERROR] Failed to import required modules: {e}")
     print("Please ensure all dependencies are installed: pip install -r requirements.txt")
     sys.exit(1)
 
@@ -86,14 +86,18 @@ class CryptoTradingBot:
         self.threads = []
         self.shutdown_event = threading.Event()
 
-        # Setup signal handlers for graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
+        # Setup signal handlers for graceful shutdown (only in main thread)
+        try:
+            signal.signal(signal.SIGINT, self._signal_handler)
+            signal.signal(signal.SIGTERM, self._signal_handler)
+        except ValueError:
+            # Signal handlers only work in main thread, skip if not available
+            pass
 
     def _signal_handler(self, signum, frame):
         """Handle shutdown signals gracefully."""
-        print(f"\n{Fore.YELLOW}📡 Received shutdown signal ({signum})")
-        print(f"{Fore.YELLOW}🔄 Initiating graceful shutdown...")
+        print(f"\n{Fore.YELLOW}[SIGNAL] Received shutdown signal ({signum})")
+        print(f"{Fore.YELLOW}[PROCESS] Initiating graceful shutdown...")
         self.shutdown()
 
     def initialize(self) -> bool:
@@ -114,12 +118,12 @@ class CryptoTradingBot:
             # Load and validate configuration
             config_path = "config/config.json"
             if not os.path.exists(config_path):
-                print(f"{Fore.RED}❌ Configuration file not found: {config_path}")
+                print(f"{Fore.RED}[ERROR] Configuration file not found: {config_path}")
                 return False
 
             self.config = load_config(config_path)
             validate_config(self.config)
-            print(f"{Fore.GREEN}✅ Configuration loaded and validated")
+            print(f"{Fore.GREEN}[OK] Configuration loaded and validated")
 
             # Initialize market data collector
             self.market_data_collector = MarketDataCollector(
@@ -128,15 +132,15 @@ class CryptoTradingBot:
 
             # Test API connection
             if not self.market_data_collector.test_connection():
-                print(f"{Fore.RED}❌ Failed to connect to exchange API")
+                print(f"{Fore.RED}[ERROR] Failed to connect to exchange API")
                 return False
-            print(f"{Fore.GREEN}✅ Exchange API connection established")
+            print(f"{Fore.GREEN}[OK] Exchange API connection established")
 
             # Initialize database manager
             db_path = self.config['database']['path']
             self.database_manager = CryptoDatabaseManager(db_path)
             self.database_manager.initialize_database()
-            print(f"{Fore.GREEN}✅ Database initialized: {db_path}")
+            print(f"{Fore.GREEN}[OK] Database initialized: {db_path}")
 
             # Initialize real-time data collector
             symbols = self.config['data_collection']['target_symbols']
@@ -145,20 +149,20 @@ class CryptoTradingBot:
                 database_manager=self.database_manager,
                 symbols=symbols
             )
-            print(f"{Fore.GREEN}✅ Real-time data collector initialized")
+            print(f"{Fore.GREEN}[OK] Real-time data collector initialized")
 
             # Initialize scheduler
             self.scheduler = DataCollectionScheduler(
                 data_collector=self.data_collector,
                 config=self.config
             )
-            print(f"{Fore.GREEN}✅ Data collection scheduler initialized")
+            print(f"{Fore.GREEN}[OK] Data collection scheduler initialized")
 
             self.logger.info("Crypto Trader Pro initialization completed successfully")
             return True
 
         except Exception as e:
-            print(f"{Fore.RED}❌ Initialization failed: {e}")
+            print(f"{Fore.RED}[ERROR] Initialization failed: {e}")
             if self.logger:
                 self.logger.error(f"Initialization failed: {e}", exc_info=True)
             return False
@@ -169,9 +173,9 @@ class CryptoTradingBot:
         print(f"{Fore.CYAN}{Style.BRIGHT}🚀 CRYPTO TRADER PRO v1.0.0")
         print(f"{Fore.CYAN}{Style.BRIGHT}{'='*60}")
         print(f"{Fore.WHITE}💰 Professional Cryptocurrency Trading Bot")
-        print(f"{Fore.WHITE}🎯 Target: 5-10% Monthly Returns")
+        print(f"{Fore.WHITE}[TARGET] Target: 5-10% Monthly Returns")
         print(f"{Fore.WHITE}🛡️  Risk Management: Max 1-2% Loss Per Trade")
-        print(f"{Fore.WHITE}📊 Strategy: RSI-based Day Trading + Arbitrage")
+        print(f"{Fore.WHITE}[DATA] Strategy: RSI-based Day Trading + Arbitrage")
         print(f"{Fore.CYAN}{'='*60}\n")
 
     def show_main_menu(self) -> int:
@@ -183,10 +187,10 @@ class CryptoTradingBot:
         """
         print(f"\n{Fore.YELLOW}{Style.BRIGHT}📋 MAIN MENU")
         print(f"{Fore.YELLOW}{'─'*40}")
-        print(f"{Fore.WHITE}1. 📡 Data Collection Only")
+        print(f"{Fore.WHITE}1. [CONNECT] Data Collection Only")
         print(f"{Fore.WHITE}2. 🔍 Arbitrage Monitoring Only")
         print(f"{Fore.WHITE}3. 🚀 Full System Integration")
-        print(f"{Fore.WHITE}4. 📊 System Status Check")
+        print(f"{Fore.WHITE}4. [DATA] System Status Check")
         print(f"{Fore.WHITE}5. ⚙️  Configuration Review")
         print(f"{Fore.WHITE}6. 🧪 Run Test Suite")
         print(f"{Fore.RED}0. 🚪 Exit")
@@ -199,9 +203,9 @@ class CryptoTradingBot:
                 if 0 <= choice <= 6:
                     return choice
                 else:
-                    print(f"{Fore.RED}❌ Please enter a number between 0 and 6")
+                    print(f"{Fore.RED}[ERROR] Please enter a number between 0 and 6")
             except ValueError:
-                print(f"{Fore.RED}❌ Please enter a valid number")
+                print(f"{Fore.RED}[ERROR] Please enter a valid number")
             except KeyboardInterrupt:
                 print(f"\n{Fore.YELLOW}👋 Goodbye!")
                 return 0
@@ -218,7 +222,7 @@ class CryptoTradingBot:
         os.system('cls' if os.name == 'nt' else 'clear')
 
         print(f"{Fore.CYAN}{Style.BRIGHT}{'='*70}")
-        print(f"{Fore.CYAN}{Style.BRIGHT}📊 CRYPTO TRADER PRO - LIVE DASHBOARD")
+        print(f"{Fore.CYAN}{Style.BRIGHT}[DATA] CRYPTO TRADER PRO - LIVE DASHBOARD")
         print(f"{Fore.CYAN}{Style.BRIGHT}{'='*70}")
 
         print(f"\n{Fore.YELLOW}🕐 SYSTEM STATUS")
@@ -232,14 +236,14 @@ class CryptoTradingBot:
         print(f"{Fore.WHITE}   Data Points: {self.stats['data_points_collected']:,}")
         print(f"{Fore.WHITE}   API Calls: {self.stats['api_calls_made']:,}")
 
-        print(f"\n{Fore.YELLOW}🎯 TRADING METRICS")
+        print(f"\n{Fore.YELLOW}[TARGET] TRADING METRICS")
         print(f"{Fore.WHITE}   Arbitrage Opportunities: {self.stats['arbitrage_opportunities']}")
         print(f"{Fore.WHITE}   Errors Encountered: {self.stats['errors_encountered']}")
         print(f"{Fore.WHITE}   Last Update: {self.stats['last_update'].strftime('%H:%M:%S')}")
 
         if self.data_collector and hasattr(self.data_collector, 'stats'):
             collector_stats = self.data_collector.stats
-            print(f"\n{Fore.YELLOW}📡 DATA COLLECTION")
+            print(f"\n{Fore.YELLOW}[CONNECT] DATA COLLECTION")
             print(f"{Fore.WHITE}   Success Rate: {collector_stats.success_rate:.1f}%")
             print(f"{Fore.WHITE}   Total Requests: {collector_stats.total_requests}")
             print(f"{Fore.WHITE}   Failed Requests: {collector_stats.failed_requests}")
@@ -270,7 +274,7 @@ class CryptoTradingBot:
         except KeyboardInterrupt:
             self.shutdown()
         except Exception as e:
-            print(f"{Fore.RED}❌ Data collection error: {e}")
+            print(f"{Fore.RED}[ERROR] Data collection error: {e}")
             self.logger.error(f"Data collection error: {e}", exc_info=True)
 
     def run_arbitrage_monitoring(self):
@@ -295,7 +299,7 @@ class CryptoTradingBot:
         except KeyboardInterrupt:
             self.shutdown()
         except Exception as e:
-            print(f"{Fore.RED}❌ Arbitrage monitoring error: {e}")
+            print(f"{Fore.RED}[ERROR] Arbitrage monitoring error: {e}")
             self.logger.error(f"Arbitrage monitoring error: {e}", exc_info=True)
 
     def run_full_system(self):
@@ -315,7 +319,7 @@ class CryptoTradingBot:
         except KeyboardInterrupt:
             self.shutdown()
         except Exception as e:
-            print(f"{Fore.RED}❌ Full system error: {e}")
+            print(f"{Fore.RED}[ERROR] Full system error: {e}")
             self.logger.error(f"Full system error: {e}", exc_info=True)
 
     def _start_all_components(self):
@@ -344,7 +348,7 @@ class CryptoTradingBot:
         scheduler_thread.start()
         self.threads.append(scheduler_thread)
 
-        print(f"{Fore.GREEN}✅ All components started successfully")
+        print(f"{Fore.GREEN}[OK] All components started successfully")
 
     def _run_data_collection_worker(self):
         """Worker thread for data collection."""
@@ -443,7 +447,7 @@ class CryptoTradingBot:
 
     def show_system_status(self):
         """Display detailed system status information."""
-        print(f"\n{Fore.CYAN}{Style.BRIGHT}📊 SYSTEM STATUS REPORT")
+        print(f"\n{Fore.CYAN}{Style.BRIGHT}[DATA] SYSTEM STATUS REPORT")
         print(f"{Fore.CYAN}{'='*50}")
 
         # System information
@@ -461,23 +465,23 @@ class CryptoTradingBot:
                 print(f"\n{Fore.YELLOW}🗄️  Database Status:")
                 print(f"{Fore.WHITE}   Database Path: {db_path}")
                 print(f"{Fore.WHITE}   Database Size: {db_size:.2f} MB")
-                print(f"{Fore.GREEN}   Status: ✅ Connected")
+                print(f"{Fore.GREEN}   Status: [OK] Connected")
             else:
                 print(f"\n{Fore.YELLOW}🗄️  Database Status:")
-                print(f"{Fore.RED}   Status: ❌ Not found")
+                print(f"{Fore.RED}   Status: [ERROR] Not found")
 
         # API connection status
         if self.market_data_collector:
             try:
                 connection_ok = self.market_data_collector.test_connection()
-                print(f"\n{Fore.YELLOW}📡 API Connection:")
+                print(f"\n{Fore.YELLOW}[CONNECT] API Connection:")
                 if connection_ok:
-                    print(f"{Fore.GREEN}   Status: ✅ Connected to Binance API")
+                    print(f"{Fore.GREEN}   Status: [OK] Connected to Binance API")
                 else:
-                    print(f"{Fore.RED}   Status: ❌ Connection failed")
+                    print(f"{Fore.RED}   Status: [ERROR] Connection failed")
             except Exception as e:
-                print(f"\n{Fore.YELLOW}📡 API Connection:")
-                print(f"{Fore.RED}   Status: ❌ Error: {e}")
+                print(f"\n{Fore.YELLOW}[CONNECT] API Connection:")
+                print(f"{Fore.RED}   Status: [ERROR] Error: {e}")
 
         # Configuration status
         print(f"\n{Fore.YELLOW}⚙️  Configuration:")
@@ -517,42 +521,42 @@ class CryptoTradingBot:
 
         try:
             # Run market data tests
-            print(f"{Fore.YELLOW}📡 Running market data tests...")
+            print(f"{Fore.YELLOW}[CONNECT] Running market data tests...")
             import subprocess
             result1 = subprocess.run([sys.executable, "test_market_data.py"],
                                    capture_output=True, text=True)
 
             if result1.returncode == 0:
-                print(f"{Fore.GREEN}✅ Market data tests passed")
+                print(f"{Fore.GREEN}[OK] Market data tests passed")
             else:
-                print(f"{Fore.RED}❌ Market data tests failed")
+                print(f"{Fore.RED}[ERROR] Market data tests failed")
                 print(result1.stdout)
 
             # Run data collection tests
-            print(f"{Fore.YELLOW}📊 Running data collection tests...")
+            print(f"{Fore.YELLOW}[DATA] Running data collection tests...")
             result2 = subprocess.run([sys.executable, "test_data_collection.py"],
                                    capture_output=True, text=True)
 
             if result2.returncode == 0:
-                print(f"{Fore.GREEN}✅ Data collection tests passed")
+                print(f"{Fore.GREEN}[OK] Data collection tests passed")
             else:
-                print(f"{Fore.RED}❌ Data collection tests failed")
+                print(f"{Fore.RED}[ERROR] Data collection tests failed")
                 print(result2.stdout)
 
             # Summary
             if result1.returncode == 0 and result2.returncode == 0:
                 print(f"\n{Fore.GREEN}{Style.BRIGHT}🎉 All tests passed!")
             else:
-                print(f"\n{Fore.RED}{Style.BRIGHT}⚠️  Some tests failed!")
+                print(f"\n{Fore.RED}{Style.BRIGHT}[WARNING]  Some tests failed!")
 
         except Exception as e:
-            print(f"{Fore.RED}❌ Test execution error: {e}")
+            print(f"{Fore.RED}[ERROR] Test execution error: {e}")
 
         input(f"\n{Fore.CYAN}Press Enter to continue...")
 
     def shutdown(self):
         """Perform graceful shutdown of all components."""
-        print(f"\n{Fore.YELLOW}🔄 Shutting down Crypto Trader Pro...")
+        print(f"\n{Fore.YELLOW}[PROCESS] Shutting down Crypto Trader Pro...")
 
         self.running = False
         self.shutdown_event.set()
@@ -566,14 +570,14 @@ class CryptoTradingBot:
         if self.database_manager:
             try:
                 self.database_manager.close()
-                print(f"{Fore.GREEN}✅ Database connections closed")
+                print(f"{Fore.GREEN}[OK] Database connections closed")
             except Exception as e:
-                print(f"{Fore.RED}❌ Database shutdown error: {e}")
+                print(f"{Fore.RED}[ERROR] Database shutdown error: {e}")
 
         # Generate shutdown report
         self._generate_shutdown_report()
 
-        print(f"{Fore.GREEN}✅ Shutdown complete")
+        print(f"{Fore.GREEN}[OK] Shutdown complete")
         if self.logger:
             self.logger.info("Crypto Trader Pro shutdown completed")
 
@@ -595,7 +599,7 @@ class CryptoTradingBot:
         try:
             # Initialize system
             if not self.initialize():
-                print(f"{Fore.RED}❌ Failed to initialize system")
+                print(f"{Fore.RED}[ERROR] Failed to initialize system")
                 return
 
             # Show welcome message
@@ -628,7 +632,7 @@ class CryptoTradingBot:
         except KeyboardInterrupt:
             print(f"\n{Fore.YELLOW}👋 Goodbye!")
         except Exception as e:
-            print(f"{Fore.RED}❌ Unexpected error: {e}")
+            print(f"{Fore.RED}[ERROR] Unexpected error: {e}")
             if self.logger:
                 self.logger.error(f"Unexpected error: {e}", exc_info=True)
             traceback.print_exc()
@@ -642,7 +646,7 @@ def main():
         bot = CryptoTradingBot()
         bot.run()
     except Exception as e:
-        print(f"{Fore.RED}❌ Critical error: {e}")
+        print(f"{Fore.RED}[ERROR] Critical error: {e}")
         traceback.print_exc()
         sys.exit(1)
 

@@ -1,0 +1,51 @@
+---
+version: '3.8'
+
+services:
+  freqtrade:
+    image: freqtradeorg/freqtrade:stable
+    restart: unless-stopped
+    container_name: freqtrade_trader
+    volumes:
+      - "./user_data:/freqtrade/user_data"
+      - "./config:/freqtrade/config"
+      - "./logs:/freqtrade/logs"
+    ports:
+      - "8080:8080"
+    command: >
+      trade
+      --logfile /freqtrade/logs/freqtrade.log
+      --db-url sqlite:////freqtrade/user_data/tradesv3.sqlite
+      --config /freqtrade/config/config.json
+      --strategy SampleStrategy
+    environment:
+      - FREQTRADE_USER_DATA_DIR=/freqtrade/user_data
+    networks:
+      - freqtrade_network
+
+  freqtrade_ui:
+    image: freqtradeorg/freqtrade:stable
+    restart: unless-stopped
+    container_name: freqtrade_ui
+    volumes:
+      - "./user_data:/freqtrade/user_data"
+      - "./config:/freqtrade/config"
+      - "./logs:/freqtrade/logs"
+    ports:
+      - "8081:8080"
+    command: >
+      webserver
+      --config /freqtrade/config/config.json
+      --db-url sqlite:////freqtrade/user_data/tradesv3.sqlite
+    depends_on:
+      - freqtrade
+    networks:
+      - freqtrade_network
+
+networks:
+  freqtrade_network:
+    driver: bridge
+
+volumes:
+  freqtrade_data:
+  freqtrade_logs:
