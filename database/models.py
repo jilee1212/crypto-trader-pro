@@ -64,6 +64,21 @@ class TradingSettings(Base):
     auto_trading_enabled = Column(Boolean, default=False)  # 자동 거래 활성화
     strategy_config = Column(Text, nullable=True)  # JSON 형태의 전략 설정
     symbols = Column(Text, nullable=True)  # JSON 배열 형태의 거래 심볼
+
+    # 주문 한도 설정 (Phase 6.2 추가)
+    max_order_amount = Column(Float, default=50.0)  # 최대 주문 금액 (USDT)
+    default_order_amount = Column(Float, default=10.0)  # 기본 주문 금액 (USDT)
+    use_balance_percentage = Column(Boolean, default=False)  # 잔고 비율 기반 주문
+    balance_percentage = Column(Float, default=2.0)  # 잔고 비율 (%)
+    trading_mode = Column(String(20), default='conservative')  # 거래 모드: conservative, balanced, aggressive
+
+    # 리스크 관리 설정 (Phase 7.1 추가)
+    position_risk_percent = Column(Float, default=3.0)  # 포지션당 리스크 비율 (%)
+    consecutive_loss_limit = Column(Integer, default=3)  # 연속 손실 한도 (회)
+    auto_protection_enabled = Column(Boolean, default=True)  # 자동 보호 활성화
+    max_leverage = Column(Float, default=10.0)  # 최대 레버리지
+    preferred_order_type = Column(String(20), default='limit')  # 선호 주문 타입: limit, market
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -132,3 +147,21 @@ class NotificationSettings(Base):
 
     def __repr__(self):
         return f"<NotificationSettings(user_id={self.user_id}, email={self.email_enabled}, telegram={self.telegram_enabled})>"
+
+class UserSession(Base):
+    """사용자 세션 테이블 (포트간 세션 공유용)"""
+    __tablename__ = 'user_sessions'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    username = Column(String(50), nullable=False)
+    session_id = Column(String(100), unique=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_activity = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Boolean, default=True)
+
+    # 관계 설정
+    user = relationship("User")
+
+    def __repr__(self):
+        return f"<UserSession(user_id={self.user_id}, username='{self.username}', session_id='{self.session_id}')>"

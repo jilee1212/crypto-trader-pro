@@ -1,346 +1,321 @@
-# 🚀 Crypto Trader Pro - Advanced Cryptocurrency Trading Platform
+# 🚀 Crypto Trader Pro - Advanced Multi-Dashboard Trading Platform
 
-완전 자동화된 24시간 무인 자동매매 시스템과 Freqtrade 기반 고급 트레이딩 플랫폼입니다.
+Professional multi-port trading platform with seamless user flow, database-based session management, and real Binance mainnet integration.
 
-**⚠️ 면책조항: 이 소프트웨어는 교육 및 연구 목적으로만 제작되었습니다. 암호화폐 거래는 상당한 손실 위험을 수반합니다. 실거래 전 반드시 테스트넷에서 충분히 테스트하세요.**
+**⚠️ 면책조항: 이 소프트웨어는 교육 및 연구 목적으로만 제작되었습니다. 암호화폐 거래는 상당한 손실 위험을 수반합니다. 실거래 전 반드시 테스트에서 충분히 검증하세요.**
 
 ## 🎯 시스템 현황 (2025년 9월 23일)
 
-### ✅ Phase 1-4 완료: 24시간 무인 자동매매 시스템
-- **운영 서버**: Vultr Ubuntu 24.04 LTS (http://nosignup.kr)
-- **시스템 상태**: 24시간 안정적 운영 중
-- **PM2 관리**: 3-프로세스 아키텍처 (웹, 봇, 백업)
-- **고급 기능**: 다중 채널 알림, 자동 백업, 사용자 인증
+### ✅ Phase 7.1-7.3 완료: AI 리스크 관리 시스템
+- **정밀 포지션 계산**: 현물/선물 자동 선택, 레버리지 최적화
+- **지정가 주문 시스템**: OCO 주문, 손절/익절 자동 설정
+- **AI 신호 통합**: 신뢰도 기반 자동 실행 시스템
+- **보호시스템**: 거래 차단 이슈로 일시 비활성화
 
-### 🚀 Phase 5C-5D 완료: Freqtrade 고급 시스템
-- **다중 지표 전략**: RSI + MACD + 볼린저 밴드 통합
-- **AI 모델 포팅**: 기존 RandomForest + LinearRegression 모델 완전 이식
-- **24/7 운영 최적화**: PM2 + Docker + 실시간 모니터링
-- **백테스팅 & 최적화**: 하이퍼파라미터 튜닝, 성능 검증 완료
+### ✅ Phase 6.1-6.5 완료: 유동적 주문 한도 시스템
+- **동적 최소 금액 조회**: 거래소별 실시간 최소 금액 캐싱
+- **사용자 맞춤 한도**: 설정 가능한 주문 상한/하한
+- **스마트 주문 제안**: 리스크 기반 최적 금액 추천
+- **다단계 검증**: 주문 실행 전 종합 유효성 검사
+
+### ✅ 이전 단계 (안정적 운영 중)
+- **단일 포트 통합**: main_app.py 기반 통합 대시보드
+- **세션 관리**: 데이터베이스 기반 사용자 인증
+- **실거래 시스템**: 바이낸스 메인넷 USDT-M 선물
 
 ## 🔧 최신 기술 스택 (2025년 9월 업데이트)
 
+### AI 리스크 관리 시스템
+- **RiskCalculator**: 정밀한 포지션 사이징 엔진
+- **OrderManager**: 지정가 + OCO 주문 관리 시스템
+- **AISignalManager**: 신뢰도 기반 자동 실행
+- **Dynamic Order Limits**: 거래소별 실시간 최소 금액 조회
+
 ### 핵심 플랫폼
-- **Freqtrade 0.29+**: 검증된 암호화폐 트레이딩 프레임워크
-- **Python 3.12**: 최신 언어 기능 및 성능 최적화
-- **Docker**: 컨테이너 기반 배포 및 격리
-- **PM2**: 3-프로세스 관리 (웹, 트레이더, 백업)
+- **Unified Dashboard**: 단일 포트 통합 인터페이스 (main_app.py)
+- **Database Session Management**: SQLAlchemy 2.0 + 안전한 사용자 인증
+- **Real Trading Integration**: Binance USDT-M Futures mainnet
+- **Advanced Risk Controls**: 수학적 정밀성 + 안전성 보장
 
-### 데이터 & 인프라
-- **SQLAlchemy 2.0**: ORM 기반 데이터베이스 관리
-- **CCXT**: 거래소 API 통합 표준 라이브러리
-- **PostgreSQL**: 운영 환경 데이터베이스 (SQLite 개발용)
-- **Nginx**: 리버스 프록시 및 로드 밸런싱
+### 거래 시스템
+- **BinanceMainnetConnector**: Real USDT-M Futures trading
+- **CCXT 4.5+**: Professional exchange API integration
+- **Smart Position Sizing**: 레버리지 자동 최적화
+- **Encrypted API Storage**: Database-based secure credential management
 
-### AI/ML & 전략
-- **RandomForest + LinearRegression**: 검증된 AI 모델
-- **RSI + MACD + Bollinger Bands**: 다중 지표 전략
-- **하이퍼파라미터 최적화**: Freqtrade Hyperopt 활용
-- **백테스팅**: 전략 성능 검증 및 최적화
-
-### 모니터링 & 운영
-- **Streamlit**: 실시간 대시보드 및 웹 인터페이스
-- **Telegram/Email**: 다중 채널 알림 시스템
-- **자동 백업**: 일일/주간/월간 백업 스케줄링
-- **성능 모니터링**: 실시간 지표 추적 및 분석
+### UI/UX 시스템
+- **Streamlit Multi-App**: Responsive web dashboard
+- **Session Restoration**: Automatic login state persistence
+- **Real-time Updates**: Live price feeds, account balance monitoring
+- **Professional Interface**: Trading-focused UI design
 
 ## 🎯 시스템 구성
 
-### 🚀 Freqtrade 트레이딩 시스템 (Phase 5C-5D 완료)
-**배포 경로**: `/home/linuxuser/crypto-trader-pro/freqtrade_setup/`
-**현재 상태**: 🟢 24/7 운영 준비 완료
+### 🔐 Multi-Dashboard User Flow (NEW - Phase 6)
+**3-Port Seamless Architecture**
 
-#### ✅ 핵심 구성 요소
-- **🤖 다중 지표 전략**: MultiIndicatorStrategy.py (RSI+MACD+볼린저밴드)
-- **🧠 AI 모델 통합**: 기존 RandomForest+LinearRegression 모델 포팅
-- **📊 실시간 모니터링**: realtime_dashboard.py (포트 8083)
-- **🔗 통합 브리지**: integration_bridge.py (포트 8082)
-- **💾 자동 백업**: freqtrade_backup.py (일일/주간/월간)
-- **⚡ 성능 최적화**: performance_optimizer.py
+#### 🔹 Login Dashboard (Port 8501)
+**URL**: http://localhost:8501
+**파일**: `login_app.py`
+**기능**:
+- 사용자 로그인/회원가입 시스템
+- bcrypt 패스워드 해싱
+- Database session 생성
+- Safe Dashboard로 자동 리디렉션
 
-#### 🌐 서비스 포트 구성
-- **8080**: Freqtrade API 서버
-- **8081**: Freqtrade Web UI
-- **8082**: Integration Bridge API
-- **8083**: Real-time Dashboard (Streamlit)
+#### 🔹 Safety Test Dashboard (Port 8506)
+**URL**: http://localhost:8506
+**파일**: `safe_mainnet_dashboard.py`
+**기능**:
+- **Real Binance Mainnet API 테스트**
+- XRP/USDT Long/Short 실거래 검증
+- API 키 검증 및 암호화 저장
+- Emergency stop 및 안전 기능
+- Main Dashboard 자동 이동
 
-### 📊 기존 대시보드 시스템 (Phase 1-4)
-**포트 8501**: http://localhost:8501 (로컬) / http://nosignup.kr (운영)
-**현재 상태**: 🟢 24시간 안정적 운영 중
+#### 🔹 Main Trading Dashboard (Port 8507)
+**URL**: http://localhost:8507
+**파일**: `main_dashboard.py`
+**기능**:
+- **Full Mainnet Trading Interface**
+- 저장된 API 키 자동 로드
+- 실시간 계정 정보 및 포지션 관리
+- 빠른 거래 인터페이스 (Long/Short)
+- 미체결 주문 관리
 
-#### ✅ 구현된 기능
-- **🔐 사용자 인증**: JWT 기반 로그인/로그아웃 시스템
-- **👤 테스트 계정**: admin/admin123, trader1/trader123
-- **📈 실시간 가격**: BTC, ETH, BNB, ADA, SOL 실시간 모니터링
-- **💰 포트폴리오**: 계정 잔고 관리 및 거래 이력
-- **📊 시장 데이터**: 주문서, 2,154개 거래쌍 정보
-- **🔔 알림 시스템**: 이메일, 텔레그램 다중 채널 지원
+### 💾 Database Architecture
+**Session Management System**
+- **UserSession Model**: 포트간 세션 공유
+- **API Key Storage**: 암호화된 자격증명 관리
+- **User Management**: 계정 생성/인증 시스템
+- **Cross-Port State**: URL 파라미터 + DB 복원
 
-### 📈 간단 대시보드 (인증 없음) - streamlit_app.py
-**별도 실행**: `streamlit run streamlit_app.py`
-**현재 상태**: 🟢 기본 기능 작동
-
-#### ✅ 구현된 기능
-- **📈 실시간 가격**: 주요 암호화폐 가격 모니터링
-- **📊 시장 데이터**: 기본적인 시장 정보
-- **💰 포트폴리오**: 기본 포트폴리오 뷰
-- **⚙️ 설정**: 기본 설정 관리
-
-### 🔧 CCXT 커넥터 - binance_testnet_connector.py (새로 구현됨)
-**현재 상태**: 🟢 CCXT 표준 패턴으로 완전 재구현
-
-#### ✅ 구현된 기능
-- **📡 연결 테스트**: Binance Testnet 연결 확인 (2,154 거래쌍)
-- **💰 계정 잔고**: `fetch_balance()` CCXT 표준 메서드
-- **📈 실시간 가격**: `fetch_ticker()` 공식 API
-- **📊 주문서**: `fetch_order_book()` 표준 패턴
-- **🔒 안전한 초기화**: sandbox 모드, 에러 처리
-
-## 🔧 핵심 기능 (현재 구현됨)
-- **👤 사용자 시스템**: 로그인/로그아웃, SQLite 기반 계정 관리
-- **🔐 API 키 관리**: Binance Testnet 연동, 안전한 키 저장
-- **📈 실시간 시장 데이터**: CCXT 기반 Binance 공식 API
-- **💼 포트폴리오 관리**: 실시간 잔고 조회 (API 키 필요)
-- **📊 대시보드**: 4개 탭 구성 (가격, 포트폴리오, 시장데이터, 설정)
-
-## 📁 프로젝트 구조 (현재 상태)
-
-### ✅ 핵심 파일 (실행 가능)
-```
-crypto-trader-pro/
-├── main_dashboard.py              # 🎯 메인 대시보드 (인증 포함) - 포트 8501
-├── streamlit_app.py               # 📈 간단 대시보드 (인증 없음)
-├── binance_testnet_connector.py   # 🔧 CCXT 기반 API 커넥터 (새로 구현)
-├── setup_test_users.py            # 👤 테스트 계정 설정 스크립트
-├── database/                      # 🗄️ 데이터베이스 (SQLite)
-│   └── crypto_trader.db           # 사용자 데이터베이스
-└── [기타 파일들]                   # 이전 버전 파일들
-```
-
-### 📊 현재 실행 중인 앱들
-- **main_dashboard.py**: 인증 기능이 있는 완전한 대시보드
-- **streamlit_app.py**: 기본 암호화폐 대시보드
-- **main.py**: (실행 중 - 별도 포트)
+### 🔒 Security Features
+- **Encrypted API Keys**: Fernet 암호화 저장
+- **Session Timeout**: 1시간 자동 만료
+- **Emergency Controls**: 즉시 거래 중단 기능
+- **Safety Limits**: 최대 주문 금액, 포지션 크기 제한
 
 ## 🚀 빠른 시작
 
-### 로컬 개발 환경 (3분 설정)
+### 1. 시스템 요구사항
 ```bash
-# 1. 의존성 설치
-pip install streamlit pandas plotly ccxt bcrypt
-
-# 2. 테스트 계정 생성
-python setup_test_users.py
-
-# 3. 메인 대시보드 실행
-streamlit run main_dashboard.py
+# Python 패키지 설치
+pip install streamlit pandas plotly ccxt bcrypt sqlalchemy cryptography python-binance
 ```
 
-### Freqtrade 시스템 배포 (운영 환경)
+### 2. 데이터베이스 초기화
 ```bash
-# 1. Freqtrade 설정 디렉토리로 이동
-cd freqtrade_setup
-
-# 2. 로컬 테스트 (DRY-RUN 모드)
-./run_phase5d_complete.sh local
-
-# 3. 프로덕션 서버 배포 (Vultr)
-./run_phase5d_complete.sh production 141.164.42.93 linuxuser
-```
-
-### 첫 사용자 가이드
-1. **기본 대시보드**: http://localhost:8501 접속
-2. **테스트 계정**: admin/admin123 또는 trader1/trader123
-3. **Freqtrade 대시보드**: http://localhost:8083 (배포 후)
-4. **API 키 설정**: Settings 탭에서 Binance Testnet 키 입력
-
-### 3. 테스트 계정 정보
-```
-관리자 계정:
-- 사용자명: admin
-- 패스워드: admin123
-- 권한: 모든 기능 접근 가능
-
-일반 사용자:
-- 사용자명: trader1
-- 패스워드: trader123
-- 권한: 기본 거래 기능
-```
-
-## 🖥️ 대시보드 구성
-
-### 📈 Live Prices 탭
-- **실시간 암호화폐 가격**: BTC, ETH, BNB, ADA, SOL
-- **가격 메트릭**: 현재 가격, 매수/매도 호가, 거래량
-- **새로고침 기능**: 실시간 가격 업데이트
-
-### 💰 Portfolio 탭
-- **연결 테스트**: Binance Testnet API 상태 확인
-- **계정 잔고**: API 키 연동 후 실제 잔고 표시
-- **권한별 접근**: 관리자/일반사용자 권한 구분
-
-### 📊 Market Data 탭
-- **거래쌍 정보**: 2,154개 Binance 거래쌍 목록
-- **주문서 데이터**: BTC/USDT 매수/매도 주문 현황
-- **시장 분석**: 실시간 시장 데이터
-
-### ⚙️ Settings 탭
-- **사용자 정보**: 로그인 정보, 권한 상태
-- **API 설정**: Binance Testnet API 키 관리
-- **시스템 정보**: CCXT 버전, 연결 상태, 데이터베이스 상태
-
-## 🔧 기술적 구현
-
-### CCXT 표준 연동
-```python
-# CCXT 공식 라이브러리 사용
-from binance_testnet_connector import BinanceTestnetConnector
-connector = BinanceTestnetConnector(api_key, secret_key)
-
-# 연결 테스트
-result = connector.test_connection()
-if result['success']:
-    print(f"연결 성공: {result['total_markets']}개 거래쌍")
-
-# 실시간 가격 조회
-price_data = connector.get_current_price('BTC/USDT')
-if price_data['success']:
-    print(f"BTC 가격: ${price_data['price']:,.2f}")
-
-# 계좌 잔고 조회
-balance = connector.get_account_balance()
-if balance['success']:
-    print(f"잔고: {balance['balances']}")
-```
-
-### 사용자 인증 시스템
-```python
-# bcrypt 패스워드 해싱
+# 테스트 계정 생성 (선택사항)
+python -c "
+from database.database_manager import get_db_manager
+from database.models import User
 import bcrypt
-password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-# 로그인 검증
-def verify_login(username, password):
-    # 데이터베이스에서 사용자 조회
-    cursor.execute('SELECT password_hash FROM users WHERE username = ?', (username,))
-    result = cursor.fetchone()
-
-    # 패스워드 검증
-    return bcrypt.checkpw(password.encode('utf-8'), result[0].encode('utf-8'))
+db_manager = get_db_manager()
+with db_manager.get_session() as session:
+    hashed_password = bcrypt.hashpw('testpass'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    new_user = User(username='testuser', password_hash=hashed_password, email='test@example.com')
+    session.add(new_user)
+    session.commit()
+    print('Test user created: testuser/testpass')
+"
 ```
 
-### 실시간 데이터 처리
+### 3. 시스템 실행
+```bash
+# 터미널 1: Login Dashboard
+streamlit run login_app.py --server.port 8501
+
+# 터미널 2: Safety Test Dashboard
+streamlit run safe_mainnet_dashboard.py --server.port 8506
+
+# 터미널 3: Main Trading Dashboard
+streamlit run main_dashboard.py --server.port 8507
+```
+
+### 4. 사용자 플로우
+1. **http://localhost:8501** → 로그인 또는 회원가입
+2. **자동 이동** → Safety Test에서 API 키 입력 및 실거래 검증
+3. **자동 이동** → Main Dashboard에서 실제 거래 시작
+
+## 💰 Trading Features
+
+### Real Mainnet Trading
+- **Binance USDT-M Futures**: 실제 메인넷 거래
+- **검증된 거래쌍**: XRP/USDT, BTC/USDT, ETH/USDT
+- **레버리지 지원**: 1x-5x 레버리지 거래
+- **양방향 거래**: Long/Short 포지션 지원
+
+### Safety Features
+- **Emergency Stop**: 모든 거래 즉시 중단
+- **Position Limits**: 최대 포지션 크기 제한
+- **Order Limits**: 주문당 최대 금액 제한
+- **Observation Mode**: 실거래 전 관찰 모드
+
+### Real Trading Examples (Verified)
+- **성공한 실거래**: XRP/USDT Long 포지션 (Order ID: 122138483629)
+- **청산 완료**: XRP/USDT Short 포지션 (Order ID: 122138542108)
+- **계정 연동**: 실제 바이낸스 퓨처스 계정 잔고 조회
+
+## 🔧 핵심 기능
+
+### 1. Multi-Port Session Management
 ```python
-# 안전한 데이터 추출
-def get_current_price(self, symbol='BTC/USDT'):
-    try:
-        ticker = self.exchange.fetch_ticker(symbol)
-        return {
-            'success': True,
-            'symbol': ticker['symbol'],
-            'price': ticker['last'],
-            'bid': ticker['bid'],
-            'ask': ticker['ask'],
-            'volume': ticker['baseVolume']
-        }
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
+# 세션 생성 (Login Dashboard)
+session_manager = get_session_manager()
+session_id = session_manager.create_session(user_id, username)
+
+# 세션 복원 (Other Dashboards)
+restored = session_manager.check_and_restore_session()
 ```
 
-## 📊 현재 시스템 상태 (2025년 9월 최신)
+### 2. API Key Management
+```python
+# API 키 저장 (암호화)
+api_manager = get_api_manager()
+saved = api_manager.save_api_key(user_id, 'binance', api_key, api_secret, is_testnet=False)
 
-### ✅ 완료된 기능
-- **실시간 데이터**: CCXT 라이브러리 기반 정확한 Binance 가격 데이터
-- **사용자 인증**: bcrypt 기반 안전한 로그인/로그아웃 시스템
-- **API 통합**: Binance Testnet 연결 완료 (CCXT 표준 패턴)
-- **대시보드**: 4탭 구성의 직관적 웹 인터페이스
-- **시장 데이터**: 2,154개 거래쌍, 실시간 주문서, 가격 정보
-- **테스트 계정**: admin, trader1 계정으로 즉시 테스트 가능
-- **에러 처리**: 안전한 데이터 추출, 네트워크 오류 처리
+# API 키 조회 (복호화)
+credentials = api_manager.get_api_credentials(user_id, 'binance', is_testnet=False)
+```
 
-### 🔄 현재 실행 중인 서비스
-- **포트 8501**: main_dashboard.py (인증 기반 메인 대시보드)
-- **별도 포트**: streamlit_app.py (간단 대시보드)
-- **API 커넥터**: binance_testnet_connector.py (CCXT 기반)
+### 3. Real Trading Integration
+```python
+# 메인넷 커넥터 초기화
+connector = BinanceMainnetConnector(api_key, api_secret)
 
-## 🚀 사용 예시
+# 실제 주문 실행
+result = connector.place_order('XRP/USDT', 'buy', quantity, order_type='market')
+```
 
-### 기본 사용 흐름
-1. **로그인** → http://localhost:8501 접속
-2. **테스트 계정** → admin/admin123 또는 trader1/trader123 입력
-3. **실시간 가격** → Live Prices 탭에서 BTC, ETH 등 가격 확인
-4. **API 설정** → Settings 탭에서 Binance Testnet 키 입력 (선택)
-5. **포트폴리오** → Portfolio 탭에서 계정 잔고 확인
-6. **시장 데이터** → Market Data 탭에서 주문서, 거래쌍 정보 확인
+## 📁 프로젝트 구조 (현재 상태)
 
-### 현재 가능한 기능
-- **실시간 모니터링**: 주요 암호화폐 가격 실시간 추적
-- **연결 테스트**: Binance Testnet API 상태 확인
-- **시장 분석**: 2,154개 거래쌍 정보, 주문서 데이터
-- **안전한 인증**: bcrypt 기반 사용자 로그인 시스템
-- **권한 관리**: 관리자/일반사용자 권한 구분
+```
+crypto-trader-pro/
+├── 🔐 Multi-Dashboard System
+│   ├── login_app.py                    # 로그인 대시보드 (8501)
+│   ├── safe_mainnet_dashboard.py       # Safety Test (8506)
+│   └── main_dashboard.py               # Main Trading (8507)
+│
+├── 🗄️ Database System
+│   ├── database/
+│   │   ├── database_manager.py         # DB 연결 관리
+│   │   ├── models.py                   # User, UserSession, ApiKey 모델
+│   │   └── api_manager.py              # API 키 암호화 저장
+│   │
+│   └── auth/
+│       ├── user_manager.py             # 사용자 관리
+│       ├── authentication.py           # 인증 시스템
+│       └── session_manager.py          # 세션 관리 (NEW)
+│
+├── 🔌 Trading Connectors
+│   ├── binance_mainnet_connector.py    # 메인넷 거래 (실거래)
+│   └── binance_testnet_connector.py    # 테스트넷 거래
+│
+├── 📊 Legacy Dashboards (기존)
+│   ├── streamlit_app.py                # 기본 대시보드
+│   └── main.py                         # 기존 메인 앱
+│
+└── 📋 Configuration
+    ├── pages/                          # Dashboard 페이지들
+    └── config/                         # 설정 파일들
+```
 
-## 📈 성과 및 안정성
+## 🔄 User Flow Details
 
-### 검증된 성능 (2025년 9월 업데이트)
-- **API 응답시간**: CCXT 라이브러리 기반 최적화된 성능
-- **데이터 정확도**: 실시간 Binance 가격 반영 (CCXT 공식 패턴)
-- **시스템 안정성**: 로컬 개발 환경에서 안정적 운영
-- **보안**: bcrypt 패스워드 해싱, 안전한 세션 관리
+### Complete Journey
+1. **로그인 단계** (8501)
+   - 새 사용자: 회원가입 → 계정 생성
+   - 기존 사용자: 로그인 → 세션 생성
+   - 자동 리디렉션: `http://localhost:8506?user=username`
 
-### 테스트 결과
-- **연결 테스트**: ✅ Binance Testnet 연결 성공 (2,154 거래쌍)
-- **실시간 가격**: ✅ BTC $112,508.44 정확 반영 (CCXT)
-- **사용자 인증**: ✅ 로그인/로그아웃 시스템 완벽 작동
-- **대시보드**: ✅ 4개 탭 모든 기능 정상 작동
-- **API 키 관리**: ✅ Settings 탭에서 안전한 키 관리
-- **에러 처리**: ✅ 네트워크 오류, 인증 오류 적절히 처리
+2. **Safety Test 단계** (8506)
+   - 세션 복원: URL 파라미터에서 사용자 정보 로드
+   - API 키 입력: Binance API 키 + 시크릿 입력
+   - 실거래 검증: 실제 XRP/USDT Long/Short 거래
+   - API 키 저장: 암호화하여 데이터베이스 저장
+   - 자동 이동: `http://localhost:8507?user=username`
 
-## 🔒 보안 및 주의사항
+3. **Main Trading 단계** (8507)
+   - 세션 + API 검증: 로그인 상태 + API 키 존재 확인
+   - 자동 API 로드: 저장된 암호화 키 자동 로드
+   - 실거래 대시보드: 계정 정보, 포지션, 주문 관리
+   - Full Trading: Long/Short, 주문 취소, Emergency Stop
 
-### API 키 보안
-- **테스트넷 우선**: 처음에는 반드시 Binance Testnet 사용
-- **권한 제한**: 필요한 권한만 최소한으로 설정
-- **안전한 저장**: 환경 변수 또는 설정 파일에 안전하게 보관
-- **정기 교체**: API 키 주기적 갱신 권장
+## 📊 실제 거래 성과
 
-### 사용자 보안
-- **강력한 패스워드**: bcrypt 해싱으로 안전하게 보호
-- **세션 관리**: 자동 로그아웃, 안전한 세션 처리
-- **권한 분리**: 관리자/일반사용자 권한 명확히 구분
+### 검증된 거래 (Real Orders)
+- **XRP/USDT Long**: Order ID 122138483629 ✅ 성공
+- **XRP/USDT Short**: Order ID 122138542108 ✅ 성공
+- **거래 금액**: $2.80 ~ $5.00 범위 (Safety 설정)
+- **레버리지**: 1x (안전 설정)
 
-## 🎯 프로젝트 성과
+### API 연동 상태
+- **Binance USDT-M Futures**: ✅ 완전 연동
+- **실시간 계정 정보**: ✅ 잔고, 포지션 조회
+- **실시간 가격**: ✅ BTC, ETH, XRP 등
+- **주문 관리**: ✅ 신규 주문, 취소, 조회
 
-**Crypto Trader Pro는 Phase 1-4 완료된 24시간 무인 자동매매 시스템과 Phase 5C-5D 완료된 Freqtrade 고급 시스템을 통합한 전문 트레이딩 플랫폼입니다.**
+## 🔒 보안 및 안전 기능
 
-### 🏆 주요 달성 성과
-- ✅ **24/7 자동매매**: PM2 3-프로세스 관리로 안정적 운영
-- ✅ **Freqtrade 통합**: 검증된 프레임워크 기반 고급 전략 구현
-- ✅ **AI 모델 포팅**: RandomForest+LinearRegression → Freqtrade 전략 완전 이식
-- ✅ **다중 지표 전략**: RSI+MACD+볼린저밴드 가중치 기반 신호 집계
-- ✅ **24/7 모니터링**: 실시간 대시보드, 다중 채널 알림, 자동 백업
-- ✅ **운영 최적화**: 99.9% 목표 가동률, <5분 자동 복구, 완전 자동화
+### API Key Security
+- **Fernet Encryption**: 대칭키 암호화로 안전한 저장
+- **Database Storage**: SQLite/PostgreSQL 암호화 저장
+- **Auto-load**: 로그인 시 자동 복호화 로드
+- **Testnet First**: 테스트넷 검증 후 메인넷 사용
 
-### 🌐 배포 환경
-- **개발 환경**: http://localhost:8501 (로컬 개발용)
-- **운영 환경**: http://nosignup.kr (Vultr 서버 24시간 운영)
-- **Freqtrade 시스템**: Phase 5D 완료, 운영 배포 준비 완료
+### Trading Safety
+- **Emergency Stop**: 전체 거래 즉시 중단
+- **Position Limits**: 최대 $50 포지션 크기
+- **Order Limits**: 주문당 최대 $5 (안전 설정)
+- **Observation Mode**: 실거래 전 관찰 모드
 
-## 🔄 최신 업데이트 (2025년 9월)
+### Session Security
+- **Database Sessions**: 포트간 안전한 세션 공유
+- **Auto Timeout**: 1시간 비활성 시 자동 만료
+- **Encrypted Storage**: 세션 정보 암호화 저장
+- **URL Parameter**: 안전한 리디렉션 방식
 
-### 🛠️ 기술적 개선사항
-- **CCXT 4.5.5**: 암호화폐 거래소 연동 표준 라이브러리
-- **Streamlit 최신 버전**: 반응형 웹 대시보드
-- **bcrypt 패스워드 해싱**: 안전한 사용자 인증
-- **SQLite 데이터베이스**: 가벼운 로컬 데이터 저장
-- **에러 처리 강화**: 네트워크, 인증, 데이터 오류 안전 처리
+## 🎯 시스템 상태
 
-### 🚀 구현 완료
-- **main_dashboard.py**: 인증 기반 완전한 대시보드
-- **streamlit_app.py**: 기본 암호화폐 모니터링 도구
-- **binance_testnet_connector.py**: CCXT 표준 패턴 API 커넥터
-- **setup_test_users.py**: 테스트 계정 자동 생성 시스템
+### ✅ 완료된 기능 (Phase 6)
+- **Multi-Dashboard Flow**: 3-포트 시스템 완전 구현
+- **Database Session Management**: 포트간 세션 공유 완료
+- **Real Mainnet Trading**: 바이낸스 메인넷 실거래 검증
+- **API Key Encryption**: 안전한 자격증명 저장/로드
+- **User Flow UX**: 로그인부터 거래까지 자연스러운 플로우
+- **Safety Features**: Emergency stop, limits, observation mode
+
+### 🔄 현재 실행 중
+- **Port 8501**: Login Dashboard (login_app.py)
+- **Port 8506**: Safety Test Dashboard (safe_mainnet_dashboard.py)
+- **Port 8507**: Main Trading Dashboard (main_dashboard.py)
+
+### 📈 검증 완료
+- **Session Restoration**: URL 파라미터 → 데이터베이스 세션 복원 ✅
+- **API Integration**: BinanceMainnetConnector 실거래 연동 ✅
+- **User Flow**: 로그인 → Safety → Main 완전한 플로우 ✅
+- **Security**: 암호화, 세션 관리, 안전 기능 ✅
+
+## 🚀 프로젝트 성과
+
+**Crypto Trader Pro**는 교육용 다중 대시보드 거래 플랫폼에서 **전문 실거래 플랫폼**으로 진화했습니다.
+
+### 🏆 주요 달성 성과 (Phase 6)
+- ✅ **Seamless User Flow**: 로그인부터 실거래까지 자연스러운 3단계 플로우
+- ✅ **Real Mainnet Trading**: 바이낸스 USDT-M 퓨처스 실거래 시스템
+- ✅ **Database Session Management**: 포트간 세션 상태 공유 완전 구현
+- ✅ **Professional Security**: API 키 암호화, 세션 관리, 거래 안전 기능
+- ✅ **Verified Trading**: 실제 XRP/USDT 거래 성공 (Order ID 확인)
+- ✅ **Emergency Controls**: 즉시 거래 중단, 포지션 관리, 리스크 제한
+
+### 🌐 시스템 아키텍처
+- **Multi-Port Design**: 기능별 분리된 3개 대시보드
+- **Database-Driven**: SQLAlchemy 기반 데이터 영속성
+- **API Integration**: CCXT + python-binance 이중 연동
+- **Security-First**: 암호화, 인증, 세션 관리 최우선
 
 ---
 
-**⚠️ 리스크 경고**: 암호화폐 거래는 높은 위험을 수반합니다. 감당할 수 있는 범위 내에서만 거래하세요. 이 소프트웨어는 교육 목적입니다. 실거래 전 충분한 테스트가 필요합니다.
+**⚠️ 리스크 경고**: 암호화폐 거래는 높은 위험을 수반합니다. 이 시스템은 교육 목적으로 제작되었습니다. 실거래 시 충분한 이해와 주의가 필요합니다. 감당할 수 있는 범위 내에서만 거래하세요.

@@ -11,7 +11,7 @@ import os
 import logging
 from typing import List, Optional, Dict, Any
 
-from .models import Base, User, ApiKey, TradingSettings, TradingSession, TradeHistory, NotificationSettings
+from .models import Base, User, ApiKey, TradingSettings, TradingSession, TradeHistory, NotificationSettings, UserSession
 
 # 로그 설정
 logging.basicConfig(level=logging.INFO)

@@ -161,22 +161,36 @@ class APIManager:
 
             # 거래소별 연결 테스트
             if exchange.lower() == 'binance':
-                from binance_testnet_connector import BinanceTestnetConnector
-                connector = BinanceTestnetConnector()
+                # 메인넷/테스트넷 선택
+                if is_testnet:
+                    from binance_testnet_connector import BinanceTestnetConnector
+                    connector = BinanceTestnetConnector(api_key, api_secret)
+                else:
+                    from binance_mainnet_connector import BinanceMainnetConnector
+                    connector = BinanceMainnetConnector(api_key, api_secret)
 
-                # 계좌 정보 조회로 연결 테스트
-                result = connector.get_account_info(api_key, api_secret)
+                # API 자격증명 테스트 (새로운 메서드 사용)
+                result = connector.test_api_credentials(api_key, api_secret)
 
-                if result.get('success'):
+                if result and result.get('success'):
                     return {
                         'success': True,
-                        'message': 'API 연결이 성공했습니다.',
+                        'message': result.get('message', 'API 연결이 성공했습니다.'),
                         'account_info': result.get('data', {})
+                    }
+                elif result:
+                    error_msg = result.get('message', 'API 연결 실패')
+                    details = result.get('details', {})
+                    suggestion = details.get('suggestion', '')
+
+                    return {
+                        'success': False,
+                        'error': f"{error_msg}. {suggestion}" if suggestion else error_msg
                     }
                 else:
                     return {
                         'success': False,
-                        'error': result.get('error', 'API 연결 실패')
+                        'error': 'API 응답 없음'
                     }
             else:
                 return {
