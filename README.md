@@ -47,7 +47,7 @@
 ## 🎯 시스템 구성
 
 ### 🚀 Freqtrade 트레이딩 시스템 (Phase 5C-5D 완료)
-**배포 경로**: `/opt/crypto-trader/freqtrade/`
+**배포 경로**: `/home/linuxuser/crypto-trader-pro/freqtrade_setup/`
 **현재 상태**: 🟢 24/7 운영 준비 완료
 
 #### ✅ 핵심 구성 요소

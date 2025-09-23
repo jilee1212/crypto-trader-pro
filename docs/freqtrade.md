@@ -129,6 +129,7 @@
 
 ### Phase 5A: Freqtrade 환경 구축 (1-2일)
 **목표**: 기존 시스템과 호환되는 Freqtrade 환경 완성
+**서버 경로**: `/home/linuxuser/crypto-trader-pro/freqtrade_setup/`
 1. Vultr 서버에 Freqtrade 설치 및 Docker 컨테이너화
 2. 바이낸스 테스트넷 API 연동 및 권한 확인
 3. 기본 백테스팅 환경 및 데이터 수집 설정
